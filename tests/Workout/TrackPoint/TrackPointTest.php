@@ -53,7 +53,7 @@ class TrackPointTest extends \PHPUnit_Framework_TestCase
         return array(
             array(new TrackPoint('-38.691450', '176.079795', new DateTime('2014-06-01 00:00:00')), 0),
             array(new TrackPoint('-38.691450', '176.079795', new DateTime('2014-06-01 00:00:01')), 0),
-            array(new TrackPoint('-38.714081', '176.084209', new DateTime('2014-06-01 00:00:10')), 916.35706135735, 0.00000000001),
+            array(new TrackPoint('-38.714081', '176.084209', new DateTime('2014-06-01 00:00:10')), 916.357061357, 0.000000001),
             array(new TrackPoint('-38.723081', '176.079209', new DateTime('2014-06-01 00:01:00')), 211.05445537715),
             array(new TrackPoint('-38.723081', '176.079209', new DateTime('2014-06-01 00:02:00')), 105.52722768857),
             array(new TrackPoint('-38.6914501', '176.0797951', new DateTime('2014-06-01 00:05:00')), 0.00016926749741346),
