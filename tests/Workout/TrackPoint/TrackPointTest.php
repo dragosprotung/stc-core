@@ -1,6 +1,6 @@
 <?php
 
-namespace SportTrackerConnector\Core\Tests\Workout\Workout\Workout\TrackPoint;
+namespace SportTrackerConnector\Core\Tests\Workout\TrackPoint;
 
 use DateTime;
 use SportTrackerConnector\Core\Workout\TrackPoint;
@@ -20,9 +20,9 @@ class TrackPointTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array(new TrackPoint('-38.691450', '176.079795', new DateTime('2014-06-01 00:00:0')), 0),
-            array(new TrackPoint('-38.714081', '176.084209', new DateTime()), 2545.4362815482),
-            array(new TrackPoint('-38.723081', '176.079209', new DateTime()), 3517.5742562858),
-            array(new TrackPoint('-38.6914501', '176.0797951', new DateTime()), 0.014105624784455),
+            array(new TrackPoint('-38.714081', '176.084209', new DateTime()), 2545.436281548, 0.000001),
+            array(new TrackPoint('-38.723081', '176.079209', new DateTime()), 3517.57425628, 0.000001),
+            array(new TrackPoint('-38.6914501', '176.0797951', new DateTime()), 0.01410562, 0.000001),
             array(new TrackPoint('0', '0', new DateTime()), 15694215.397435, 0.000001)
         );
     }
@@ -31,15 +31,15 @@ class TrackPointTest extends \PHPUnit_Framework_TestCase
      * Test distance calculation between 2 points.
      *
      * @dataProvider dataProviderTestDistance
-     * @param TrackPoint $destinationTrackPoint The destination track point.
+     * @param TrackPoint $destination The destination track point.
      * @param float $expected The expected distance.
      * @param float $delta The allowed numerical distance between two values to consider them equal
      */
-    public function testDistance(TrackPoint $destinationTrackPoint, $expected, $delta = 0.0)
+    public function testDistance(TrackPoint $destination, $expected, $delta = 0.0)
     {
         $starPoint = new TrackPoint('-38.691450', '176.079795', new DateTime());
 
-        $actual = $starPoint->distance($destinationTrackPoint);
+        $actual = $starPoint->distance($destination);
         $this->assertEquals($expected, $actual, '', $delta);
     }
 
@@ -53,7 +53,7 @@ class TrackPointTest extends \PHPUnit_Framework_TestCase
         return array(
             array(new TrackPoint('-38.691450', '176.079795', new DateTime('2014-06-01 00:00:00')), 0),
             array(new TrackPoint('-38.691450', '176.079795', new DateTime('2014-06-01 00:00:01')), 0),
-            array(new TrackPoint('-38.714081', '176.084209', new DateTime('2014-06-01 00:00:10')), 916.35706135735),
+            array(new TrackPoint('-38.714081', '176.084209', new DateTime('2014-06-01 00:00:10')), 916.35706135735, 0.00000000001),
             array(new TrackPoint('-38.723081', '176.079209', new DateTime('2014-06-01 00:01:00')), 211.05445537715),
             array(new TrackPoint('-38.723081', '176.079209', new DateTime('2014-06-01 00:02:00')), 105.52722768857),
             array(new TrackPoint('-38.6914501', '176.0797951', new DateTime('2014-06-01 00:05:00')), 0.00016926749741346),
@@ -65,15 +65,16 @@ class TrackPointTest extends \PHPUnit_Framework_TestCase
      * Test speed calculation between 2 points that do not have the distance set.
      *
      * @dataProvider dataProviderTestSpeedForPointsWithoutDistance
-     * @param TrackPoint $destinationTrackPoint The destination track point.
+     * @param TrackPoint $destination The destination track point.
      * @param float $expected The expected speed.
+     * @param float $delta The allowed numerical distance between two values to consider them equal
      */
-    public function testSpeedForPointsWithoutDistance(TrackPoint $destinationTrackPoint, $expected)
+    public function testSpeedForPointsWithoutDistance(TrackPoint $destination, $expected, $delta = 0.0)
     {
         $startPoint = new TrackPoint('-38.691450', '176.079795', new DateTime('2014-06-01 00:00:00'));
 
-        $actual = $startPoint->speed($destinationTrackPoint);
-        $this->assertEquals($expected, $actual);
+        $actual = $startPoint->speed($destination);
+        $this->assertEquals($expected, $actual, '', $delta);
     }
 
     /**
@@ -83,9 +84,9 @@ class TrackPointTest extends \PHPUnit_Framework_TestCase
     {
         $startPoint = new TrackPoint('-38.691450', '176.079795', new DateTime('2014-06-01 00:00:00'));
         $startPoint->setDistance(1000);
-        $destinationTrackPoint = new TrackPoint('-38.6914501', '176.0797951', new DateTime('2014-06-01 00:05:00'));
+        $destination = new TrackPoint('-38.6914501', '176.0797951', new DateTime('2014-06-01 00:05:00'));
 
-        $actual = $startPoint->speed($destinationTrackPoint);
+        $actual = $startPoint->speed($destination);
         $this->assertEquals(0.00016926749741346, $actual);
     }
 
@@ -109,10 +110,10 @@ class TrackPointTest extends \PHPUnit_Framework_TestCase
     {
         $startPoint = new TrackPoint('-38.691450', '176.079795', new DateTime('2014-06-01 00:00:00'));
         $startPoint->setDistance(250);
-        $destinationTrackPoint = new TrackPoint('-38.6914501', '176.0797951', new DateTime('2014-06-01 00:01:01'));
-        $destinationTrackPoint->setDistance(1000);
+        $destination = new TrackPoint('-38.6914501', '176.0797951', new DateTime('2014-06-01 00:01:01'));
+        $destination->setDistance(1000);
 
-        $actual = $startPoint->speed($destinationTrackPoint);
+        $actual = $startPoint->speed($destination);
         $this->assertEquals(44.2622950819672169, $actual);
     }
 
