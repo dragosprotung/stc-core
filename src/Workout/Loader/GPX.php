@@ -1,23 +1,24 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Loader;
 
-use SportTrackerConnector\Core\Workout\Workout;
+use DateTime;
+use SimpleXMLElement;
 use SportTrackerConnector\Core\Workout\Author;
-use SportTrackerConnector\Core\Workout\Track;
-use SportTrackerConnector\Core\Workout\TrackPoint;
-use SportTrackerConnector\Core\Workout\SportGuesser;
 use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
 use SportTrackerConnector\Core\Workout\Extension\HR;
-use SimpleXMLElement;
-use DateTime;
+use SportTrackerConnector\Core\Workout\SportGuesser;
+use SportTrackerConnector\Core\Workout\Track;
+use SportTrackerConnector\Core\Workout\TrackPoint;
+use SportTrackerConnector\Core\Workout\Workout;
 
 /**
  * Load a workout from GPX format.
  */
 class GPX extends AbstractLoader
 {
-
     /**
      * {@inheritdoc}
      */
@@ -35,14 +36,14 @@ class GPX extends AbstractLoader
 
             // Sport.
             if (isset($simpleXMLTrack->type)) {
-                $track->setSport(SportGuesser::getSportFromCode($simpleXMLTrack->type));
+                $track->setSport(SportGuesser::getSportFromCode((string)$simpleXMLTrack->type));
             }
 
             // Track points.
             foreach ($simpleXMLTrack->trkseg->trkpt as $point) {
                 $attributes = $point->attributes();
-                $dateTime = new DateTime($point->time);
-                $trackPoint = new TrackPoint((string)$attributes['lat'], (string)$attributes['lon'], $dateTime);
+                $dateTime = new DateTime((string)$point->time);
+                $trackPoint = new TrackPoint((float)$attributes['lat'], (float)$attributes['lon'], $dateTime);
                 $trackPoint->setElevation((int)$point->ele);
                 if (isset($point->extensions)) {
                     $trackPoint->setExtensions($this->parseExtensions($point->extensions));

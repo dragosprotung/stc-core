@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Extension;
 
 /**
@@ -7,16 +9,6 @@ namespace SportTrackerConnector\Core\Workout\Extension;
  */
 abstract class AbstractExtension implements ExtensionInterface
 {
-
-    const ID = 'GenericExtension';
-
-    /**
-     * Name fot the extension.
-     *
-     * @var string
-     */
-    protected $name;
-
     /**
      * Value of the extension.
      *
@@ -35,11 +27,11 @@ abstract class AbstractExtension implements ExtensionInterface
     }
 
     /**
-     * Set the value for the extension.
-     *
      * @param mixed $value The value to set.
+     *
+     * @throws \InvalidArgumentException
      */
-    public function setValue($value)
+    protected function setValue($value)
     {
         $this->value = $value;
     }
@@ -47,24 +39,8 @@ abstract class AbstractExtension implements ExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function getID()
-    {
-        return static::ID;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getValue()
+    public function value()
     {
         return $this->value;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 }

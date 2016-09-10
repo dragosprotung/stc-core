@@ -1,21 +1,23 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tests\Workout\Dumper\TCX;
 
 use DateTime;
+use League\Flysystem\FilesystemInterface;
 use SportTrackerConnector\Core\Workout\Dumper\TCX;
-use SportTrackerConnector\Core\Workout\Workout;
 use SportTrackerConnector\Core\Workout\Extension\HR;
 use SportTrackerConnector\Core\Workout\SportMapperInterface;
 use SportTrackerConnector\Core\Workout\Track;
 use SportTrackerConnector\Core\Workout\TrackPoint;
+use SportTrackerConnector\Core\Workout\Workout;
 
 /**
  * Test the TCX dumper.
  */
 class TCXTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Test dumping a workout to a TCX string.
      */
@@ -25,17 +27,18 @@ class TCXTest extends \PHPUnit_Framework_TestCase
         $workout->addTrack(
             new Track(
                 array(
-                    $this->getTrackPoint('53.551075', '9.993672', '2014-05-30T17:12:58+00:00', 11, 0, 78),
-                    $this->getTrackPoint('53.550085', '9.992682', '2014-05-30T17:13:00+00:00', 10, 128, 88)
+                    $this->getTrackPoint(53.551075, 9.993672, '2014-05-30T17:12:58+00:00', 11, 0.0, 78),
+                    $this->getTrackPoint(53.550085, 9.992682, '2014-05-30T17:13:00+00:00', 10, 128.0, 88)
                 ),
                 SportMapperInterface::RUNNING
             )
         );
 
-        $tcx = new TCX();
+        $filesystemMock = $this->createMock(FilesystemInterface::class);
+        $tcx = new TCX($filesystemMock);
         $actual = $tcx->dumpToString($workout);
 
-        $this->assertXmlStringEqualsXmlFile(__DIR__ . '/Expected/testDumpToStringSingleActivity.tcx', $actual);
+        self::assertXmlStringEqualsXmlFile(__DIR__ . '/Expected/' . $this->getName() . '.tcx', $actual);
     }
 
     /**
@@ -47,8 +50,8 @@ class TCXTest extends \PHPUnit_Framework_TestCase
         $workout->addTrack(
             new Track(
                 array(
-                    $this->getTrackPoint('53.551075', '9.993672', '2014-05-30T17:12:58+00:00', 11, null, 78),
-                    $this->getTrackPoint('53.550085', '9.992682', '2014-05-30T17:12:59+00:00', 10, 128, 88)
+                    $this->getTrackPoint(53.551075, 9.993672, '2014-05-30T17:12:58+00:00', 11, null, 78),
+                    $this->getTrackPoint(53.550085, 9.992682, '2014-05-30T17:12:59+00:00', 10, 128.0, 88)
                 ),
                 SportMapperInterface::RUNNING
             )
@@ -56,32 +59,39 @@ class TCXTest extends \PHPUnit_Framework_TestCase
         $workout->addTrack(
             new Track(
                 array(
-                    $this->getTrackPoint('53.549075', '9.991672', '2014-05-30T17:13:00+00:00', 9, 258, 98),
-                    $this->getTrackPoint('53.548085', '9.990682', '2014-05-30T17:13:01+00:00', 8, 456, 108)
+                    $this->getTrackPoint(53.549075, 9.991672, '2014-05-30T17:13:00+00:00', 9, 258.0, 98),
+                    $this->getTrackPoint(53.548085, 9.990682, '2014-05-30T17:13:01+00:00', 8, 456.0, 108)
                 ),
                 SportMapperInterface::SWIMMING
             )
         );
 
-        $tcx = new TCX();
+        $filesystemMock = $this->createMock(FilesystemInterface::class);
+        $tcx = new TCX($filesystemMock);
         $actual = $tcx->dumpToString($workout);
 
-        $this->assertXmlStringEqualsXmlFile(__DIR__ . '/Expected/testDumpToStringMultiActivity.tcx', $actual);
+        self::assertXmlStringEqualsXmlFile(__DIR__ . '/Expected/' . $this->getName() . '.tcx', $actual);
     }
 
     /**
      * Get a track point.
      *
-     * @param string $latitude The latitude.
-     * @param string $longitude The longitude.
+     * @param float $latitude The latitude.
+     * @param float $longitude The longitude.
      * @param string $time The time.
      * @param float $distance The distance from start to that point.
      * @param integer $elevation The elevation.
      * @param integer $heartRate The heart rate.
      * @return TrackPoint
      */
-    private function getTrackPoint($latitude, $longitude, $time, $elevation, $distance = null, $heartRate = null)
-    {
+    private function getTrackPoint(
+        float $latitude,
+        float $longitude,
+        $time,
+        $elevation,
+        $distance = null,
+        $heartRate = null
+    ) {
         $trackPoint = new TrackPoint($latitude, $longitude, new DateTime($time));
         $trackPoint->setElevation($elevation);
         $trackPoint->setDistance($distance);

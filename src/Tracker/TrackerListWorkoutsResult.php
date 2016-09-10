@@ -1,15 +1,14 @@
 <?php
 
-namespace SportTrackerConnector\Core\Tracker;
+declare(strict_types = 1);
 
-use DateTime;
+namespace SportTrackerConnector\Core\Tracker;
 
 /**
  * One result item when fetching a list of workouts from a tracker.
  */
 class TrackerListWorkoutsResult
 {
-
     /**
      * The ID of the workout.
      *
@@ -36,9 +35,9 @@ class TrackerListWorkoutsResult
      *
      * @param integer $idWorkout The ID of the workout.
      * @param string $sport The sport. One of the constants from SportMapperInterface.
-     * @param DateTime $startDateTime The start date time of the workout.
+     * @param \DateTime $startDateTime The start date time of the workout.
      */
-    public function __construct($idWorkout, $sport, DateTime $startDateTime)
+    public function __construct($idWorkout, $sport, \DateTime $startDateTime)
     {
         $this->idWorkout = $idWorkout;
         $this->sport = $sport;

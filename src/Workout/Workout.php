@@ -1,14 +1,14 @@
 <?php
 
-namespace SportTrackerConnector\Core\Workout;
+declare(strict_types = 1);
 
+namespace SportTrackerConnector\Core\Workout;
 
 /**
  * A workout.
  */
 class Workout
 {
-
     /**
      * The author of a workout.
      *

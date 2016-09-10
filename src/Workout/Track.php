@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout;
 
 use DateTime;
@@ -10,7 +12,6 @@ use SportTrackerConnector\Core\Date\DateInterval;
  */
 class Track
 {
-
     /**
      * The sport for the workout.
      *
@@ -50,9 +51,9 @@ class Track
      * Constructor.
      *
      * @param TrackPoint[] $trackPoints The track points.
-     * @param mixed $sport The sport for this track.
+     * @param string $sport The sport for this track.
      */
-    public function __construct(array $trackPoints = array(), $sport = SportMapperInterface::OTHER)
+    public function __construct(array $trackPoints = array(), string $sport = SportMapperInterface::OTHER)
     {
         $this->setTrackPoints($trackPoints);
         $this->setSport($sport);
@@ -63,7 +64,7 @@ class Track
      *
      * @param string $sport The sport.
      */
-    public function setSport($sport)
+    public function setSport(string $sport)
     {
         $this->sport = $sport;
     }
@@ -73,7 +74,7 @@ class Track
      *
      * @return string
      */
-    public function getSport()
+    public function getSport() : string
     {
         return $this->sport;
     }
@@ -113,7 +114,7 @@ class Track
      *
      * @return TrackPoint
      */
-    public function getLastTrackPoint()
+    public function getLastTrackPoint() : TrackPoint
     {
         $lastTrackPoint = end($this->trackPoints);
         reset($this->trackPoints);
@@ -154,7 +155,7 @@ class Track
     {
         $this->startDateTime = null;
         foreach ($this->getTrackPoints() as $trackPoint) {
-            if ($this->startDateTime > $trackPoint->getDateTime() || $this->startDateTime === null) {
+            if ($this->startDateTime === null || $this->startDateTime > $trackPoint->getDateTime()) {
                 $this->startDateTime = clone $trackPoint->getDateTime();
             }
         }
@@ -195,7 +196,7 @@ class Track
     {
         $this->endDateTime = null;
         foreach ($this->getTrackPoints() as $trackPoint) {
-            if ($this->endDateTime < $trackPoint->getDateTime() || $this->startDateTime === null) {
+            if ($this->startDateTime === null || $this->endDateTime < $trackPoint->getDateTime()) {
                 $this->endDateTime = clone $trackPoint->getDateTime();
             }
         }

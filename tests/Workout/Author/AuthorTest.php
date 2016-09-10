@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tests\Workout\Author;
 
 use SportTrackerConnector\Core\Workout\Author;
@@ -9,7 +11,6 @@ use SportTrackerConnector\Core\Workout\Author;
  */
 class AuthorTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Data provider for testSetGetNameValid();
      *
@@ -18,7 +19,6 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
     public function dataProviderTestSetGetNameValid()
     {
         return array(
-            array(null),
             array('100'),
             array('John Doe'),
             array(new TestSetGetNameInvalidToString())
@@ -34,7 +34,7 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
     public function testSetGetNameValid($name)
     {
         $author = new Author($name);
-        $this->assertEquals($name, $author->getName());
+        self::assertEquals($name, $author->name());
     }
 
     /**
@@ -45,6 +45,7 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
     public function dataProviderTestSetGetNameInvalid()
     {
         return array(
+            array(null),
             array(array()),
             array(new \stdClass())
         );
@@ -58,7 +59,9 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetGetNameInvalid($name)
     {
-        $this->setExpectedException('InvalidArgumentException', 'The name of the author must be a string.');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The name of the author must be a string.');
+
         new Author($name);
     }
 }
@@ -68,7 +71,6 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
  */
 class TestSetGetNameInvalidToString
 {
-
     public function __toString()
     {
         return 'john Doe';

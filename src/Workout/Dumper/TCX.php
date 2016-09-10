@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Dumper;
 
 use DateTime;
 use DateTimeZone;
 use InvalidArgumentException;
 use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
-use SportTrackerConnector\Core\Workout\TrackPoint;
-use SportTrackerConnector\Core\Workout\Workout;
 use SportTrackerConnector\Core\Workout\Extension\HR;
 use SportTrackerConnector\Core\Workout\Track;
+use SportTrackerConnector\Core\Workout\TrackPoint;
+use SportTrackerConnector\Core\Workout\Workout;
 use XMLWriter;
 
 /**
@@ -17,11 +19,10 @@ use XMLWriter;
  */
 class TCX extends AbstractDumper
 {
-
     /**
      * {@inheritdoc}
      */
-    public function dumpToString(Workout $workout)
+    public function dumpToString(Workout $workout) : string
     {
 
         $xmlWriter = new XMLWriter();
@@ -53,7 +54,7 @@ class TCX extends AbstractDumper
      * @param XMLWriter $xmlWriter The XML writer.
      * @param Workout $workout The workout.
      */
-    protected function writeTracks(XMLWriter $xmlWriter, Workout $workout)
+    private function writeTracks(XMLWriter $xmlWriter, Workout $workout)
     {
         $xmlWriter->startElement('Activities');
         foreach ($workout->getTracks() as $track) {
@@ -65,13 +66,13 @@ class TCX extends AbstractDumper
             $xmlWriter->startElement('Lap');
 
             $xmlWriter->writeAttribute('StartTime', $this->formatDateTime($track->getStartDateTime()));
-            $xmlWriter->writeElement('TotalTimeSeconds', $track->getDuration()->getTotalSeconds());
-            $xmlWriter->writeElement('DistanceMeters', $track->getLength());
+            $xmlWriter->writeElement('TotalTimeSeconds', (string)$track->getDuration()->getTotalSeconds());
+            $xmlWriter->writeElement('DistanceMeters', (string)$track->getLength());
 
             $this->writeLapHeartRateDate($xmlWriter, $track);
 
             $xmlWriter->startElement('Track');
-            $this->writeTrackPoints($xmlWriter, $track->getTrackpoints());
+            $this->writeTrackPoints($xmlWriter, $track->getTrackPoints());
             $xmlWriter->endElement();
 
             $xmlWriter->endElement();
@@ -99,16 +100,16 @@ class TCX extends AbstractDumper
 
             // Position.
             $xmlWriter->startElement('Position');
-            $xmlWriter->writeElement('LatitudeDegrees', $trackPoint->getLatitude());
-            $xmlWriter->writeElement('LongitudeDegrees', $trackPoint->getLongitude());
+            $xmlWriter->writeElement('LatitudeDegrees', (string)$trackPoint->getLatitude());
+            $xmlWriter->writeElement('LongitudeDegrees', (string)$trackPoint->getLongitude());
             $xmlWriter->endElement();
 
             // Elevation.
-            $xmlWriter->writeElement('AltitudeMeters', $trackPoint->getElevation());
+            $xmlWriter->writeElement('AltitudeMeters', (string)$trackPoint->getElevation());
 
             // Distance.
             if ($trackPoint->hasDistance() === true) {
-                $xmlWriter->writeElement('DistanceMeters', $trackPoint->getDistance());
+                $xmlWriter->writeElement('DistanceMeters', (string)$trackPoint->getDistance());
             }
 
             // Extensions.
@@ -129,8 +130,8 @@ class TCX extends AbstractDumper
         $averageHeartRate = array();
         $maxHearRate = null;
         foreach ($track->getTrackPoints() as $trackPoint) {
-            if ($trackPoint->hasExtension(HR::ID) === true) {
-                $pointHearRate = $trackPoint->getExtension(HR::ID)->getValue();
+            if ($trackPoint->hasExtension(HR::ID()) === true) {
+                $pointHearRate = $trackPoint->getExtension(HR::ID())->value();
 
                 $maxHearRate = max($maxHearRate, $pointHearRate);
                 $averageHeartRate[] = $pointHearRate;
@@ -140,14 +141,15 @@ class TCX extends AbstractDumper
         if ($averageHeartRate !== array()) {
             $xmlWriter->startElement('AverageHeartRateBpm');
             $xmlWriter->writeAttributeNs('xsi', 'type', null, 'HeartRateInBeatsPerMinute_t');
-            $xmlWriter->writeElement('Value', array_sum($averageHeartRate) / count($averageHeartRate));
+            $hearRateValue = array_sum($averageHeartRate) / count($averageHeartRate);
+            $xmlWriter->writeElement('Value', (string)$hearRateValue);
             $xmlWriter->endElement();
         }
 
         if ($maxHearRate !== null) {
             $xmlWriter->startElement('MaximumHeartRateBpm');
             $xmlWriter->writeAttributeNs('xsi', 'type', null, 'HeartRateInBeatsPerMinute_t');
-            $xmlWriter->writeElement('Value', $maxHearRate);
+            $xmlWriter->writeElement('Value', (string)$maxHearRate);
             $xmlWriter->endElement();
         }
     }
@@ -159,13 +161,13 @@ class TCX extends AbstractDumper
      * @param ExtensionInterface[] $extensions The extensions to write.
      * @throws InvalidArgumentException If an extension is not known.
      */
-    protected function writeExtensions(XMLWriter $xmlWriter, array $extensions)
+    private function writeExtensions(XMLWriter $xmlWriter, array $extensions)
     {
         foreach ($extensions as $extension) {
-            switch ($extension->getID()) {
-                case HR::ID:
+            switch ($extension::ID()) {
+                case HR::ID():
                     $xmlWriter->startElement('HeartRateBpm');
-                    $xmlWriter->writeElement('Value', $extension->getValue());
+                    $xmlWriter->writeElement('Value', (string)$extension->value());
                     $xmlWriter->endElement();
                     break;
             }

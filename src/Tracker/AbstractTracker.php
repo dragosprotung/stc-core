@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tracker;
 
 use DateTime;
@@ -13,18 +15,17 @@ use SportTrackerConnector\Core\Workout\SportMapperInterface;
  */
 abstract class AbstractTracker implements TrackerInterface
 {
-
     use LoggerAwareTrait;
 
     /**
-     * Username for polar.
+     * Username for the tracker.
      *
      * @var string
      */
     protected $username;
 
     /**
-     * Password for polar.
+     * Password for the tracker.
      *
      * @var string
      */
@@ -45,39 +46,27 @@ abstract class AbstractTracker implements TrackerInterface
     protected $sportMapper;
 
     /**
-     * Constructor.
-     *
      * @param LoggerInterface $logger The logger.
-     * @param string $username Username for the tracker.
-     * @param string $password Password for the tracker.
+     * @param DateTimeZone $timeZone
      */
-    public function __construct(LoggerInterface $logger, $username = null, $password = null)
+    public function __construct(LoggerInterface $logger, DateTimeZone $timeZone)
     {
-        $this->logger = $logger;
-        $this->username = $username;
-        $this->password = $password;
-        $this->timeZone = new DateTimeZone('UTC');
+        $this->setLogger($logger);
+        $this->timeZone = $timeZone;
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function fromConfig(LoggerInterface $logger, array $config)
+    public function getTimeZone() : DateTimeZone
     {
-        $tracker = new static($logger, $config['auth']['username'], $config['auth']['password']);
-
-        $timeZone = new DateTimeZone($config['timezone']);
-        $tracker->setTimeZone($timeZone);
-
-        return $tracker;
+        return $this->timeZone;
     }
 
     /**
-     * Get offset between the tracker time zone and UTC time zone in seconds.
-     *
-     * @return integer
+     * {@inheritdoc}
      */
-    public function getTimeZoneOffset()
+    public function getTimeZoneOffset() : int
     {
         $originDateTime = new DateTime('now', $this->getTimeZone());
 
@@ -90,23 +79,7 @@ abstract class AbstractTracker implements TrackerInterface
     /**
      * {@inheritdoc}
      */
-    public function getTimeZone()
-    {
-        return $this->timeZone;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setTimeZone(DateTimeZone $timeZone)
-    {
-        $this->timeZone = $timeZone;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSportMapper()
+    public function getSportMapper() : SportMapperInterface
     {
         if ($this->sportMapper === null) {
             $this->sportMapper = $this->constructSportMapper();
@@ -120,5 +93,5 @@ abstract class AbstractTracker implements TrackerInterface
      *
      * @return \SportTrackerConnector\Core\Workout\SportMapperInterface
      */
-    abstract protected function constructSportMapper();
+    abstract protected function constructSportMapper() : SportMapperInterface;
 }

@@ -1,24 +1,40 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Loader;
 
-use InvalidArgumentException;
+use League\Flysystem\FilesystemInterface;
+use League\Flysystem\UnreadableFileException;
 
 /**
  * Abstract loader.
  */
 abstract class AbstractLoader implements LoaderInterface
 {
+    /**
+     * @var FilesystemInterface
+     */
+    private $filesystem;
+
+    /**
+     * @param FilesystemInterface $filesystem
+     */
+    public function __construct(FilesystemInterface $filesystem)
+    {
+        $this->filesystem = $filesystem;
+    }
 
     /**
      * {@inheritdoc}
      */
     public function fromFile($file)
     {
-        if (is_readable($file) !== true) {
-            throw new InvalidArgumentException('File "' . $file . '" is not readable.');
+        $content = $this->filesystem->read($file);
+        if ($content === false) {
+            throw new UnreadableFileException();
         }
 
-        return $this->fromString(file_get_contents($file));
+        return $this->fromString($content);
     }
 }

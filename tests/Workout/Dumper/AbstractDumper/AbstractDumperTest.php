@@ -1,62 +1,44 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tests\Workout\Dumper\AbstractDumper;
 
-use org\bovigo\vfs\vfsStream;
+use League\Flysystem\Adapter\NullAdapter;
+use League\Flysystem\Exception;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemInterface;
+use SportTrackerConnector\Core\Workout\Dumper\AbstractDumper;
+use SportTrackerConnector\Core\Workout\Workout;
 
 /**
  * Test for \SportTrackerConnector\Core\Workout\Dumper\AbstractDumper.
  */
 class AbstractDumperTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * The root folder of vfsStream for testing.
-     *
-     * @var \org\bovigo\vfs\vfsStreamDirectory
-     */
-    private $root;
-
-    /**
-     * Set up test environment.
-     */
-    public function setUp()
-    {
-        $this->root = vfsStream::setup();
-    }
-
-    /**
-     * Test dump to file throws exception if file does not exist and the directory is not writable.
-     */
-    public function testDumpToFileThrowsExceptionIfFileDoesNotExistAndTheDirectoryIsNotWritable()
-    {
-        $mock = $this->getMockForAbstractClass('SportTrackerConnector\Core\Workout\Dumper\AbstractDumper');
-
-        $this->root->chmod(000);
-        $file = vfsStream::url('root/workout.tst');
-
-        $workoutMock = $this->getMock('SportTrackerConnector\Core\Workout\Workout');
-
-        $this->setExpectedException('InvalidArgumentException', 'Directory for output file "vfs://root/workout.tst" is not writable.');
-
-        $mock->dumpToFile($workoutMock, $file);
-    }
-
     /**
      * Test dump to file throws exception if file is not writable.
      */
     public function testDumpToFileThrowsExceptionIfFileIsNotWritable()
     {
-        $mock = $this->getMockForAbstractClass('SportTrackerConnector\Core\Workout\Dumper\AbstractDumper');
+        $adapter = new class extends NullAdapter
+        {
+            public function has($path)
+            {
+                return true;
+            }
+        };
+        $filesystem = new Filesystem($adapter);
+        $mock = $this->getMockForAbstractClass(AbstractDumper::class, array($filesystem));
 
-        $file = vfsStream::url('root/workout.tst');
-        touch($file);
-        chmod($file, 000);
+        $file = 'workout.tst';
 
-        $workoutMock = $this->getMock('SportTrackerConnector\Core\Workout\Workout');
+        $workoutMock = $this->createMock(Workout::class);
 
-        $this->setExpectedException('InvalidArgumentException', 'The output file "vfs://root/workout.tst" is not writable.');
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Could not write to workout.tst');
 
+        /** @var AbstractDumper $mock */
         $mock->dumpToFile($workoutMock, $file);
     }
 
@@ -65,18 +47,30 @@ class AbstractDumperTest extends \PHPUnit_Framework_TestCase
      */
     public function testDumpToFileCallsDumpToString()
     {
-        $mock = $this->getMockBuilder('SportTrackerConnector\Core\Workout\Dumper\AbstractDumper')
+        $workoutMock = $this->createMock(Workout::class);
+        $file = 'workout.tst';
+
+        $filesystemMock = $this
+            ->getMockBuilder(FilesystemInterface::class)
+            ->setMethods(array('put'))
+            ->getMockForAbstractClass();
+        $filesystemMock
+            ->expects(self::once())
+            ->method('put')
+            ->with($file, 'dumped content')
+            ->will(self::returnValue(true));
+        $mock = $this->getMockBuilder(AbstractDumper::class)
+            ->setConstructorArgs(array($filesystemMock))
             ->setMethods(array('dumpToString'))
             ->getMockForAbstractClass();
 
-        $workoutMock = $this->getMock('SportTrackerConnector\Core\Workout\Workout');
-        $fileMock = vfsStream::url('root/workout.tst');
+        $mock
+            ->expects(self::once())
+            ->method('dumpToString')
+            ->with($workoutMock)
+            ->will(self::returnValue('dumped content'));
 
-        $mock->expects($this->once())->method('dumpToString')->with($workoutMock)->will($this->returnValue('dumped content'));
-
-        $mock->dumpToFile($workoutMock, $fileMock);
-
-        $this->assertFileExists($fileMock);
-        $this->assertSame('dumped content', file_get_contents($fileMock));
+        /** @var AbstractDumper $mock */
+        $mock->dumpToFile($workoutMock, $file);
     }
 }

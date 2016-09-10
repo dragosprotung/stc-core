@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout;
 
 /**
@@ -7,14 +9,13 @@ namespace SportTrackerConnector\Core\Workout;
  */
 class SportGuesser
 {
-
     /**
      * Get the sport code from the tracker sport code.
      *
-     * @param mixed $code The code from the tracker.
+     * @param string $code The code from the tracker.
      * @return string
      */
-    public static function getSportFromCode($code)
+    public static function getSportFromCode(string $code) : string
     {
         switch (strtolower(trim($code))) {
             case SportMapperInterface::RUNNING:

@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Dumper;
 
+use DateTime;
+use DateTimeZone;
+use InvalidArgumentException;
 use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
+use SportTrackerConnector\Core\Workout\Extension\HR;
 use SportTrackerConnector\Core\Workout\TrackPoint;
 use SportTrackerConnector\Core\Workout\Workout;
 use XMLWriter;
-use DateTime;
-use DateTimeZone;
-use SportTrackerConnector\Core\Workout\Extension\HR;
-use InvalidArgumentException;
 
 /**
  * Dump a workout to GPX format.
@@ -19,7 +21,7 @@ class GPX extends AbstractDumper
     /**
      * {@inheritdoc}
      */
-    public function dumpToString(Workout $workout)
+    public function dumpToString(Workout $workout) : string
     {
         $xmlWriter = new XMLWriter();
         $xmlWriter->openMemory();
@@ -36,7 +38,12 @@ class GPX extends AbstractDumper
             'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd'
         );
         $xmlWriter->writeAttribute('xmlns', 'http://www.topografix.com/GPX/1/1');
-        $xmlWriter->writeAttributeNs('xmlns', 'gpxtpx', null, 'http://www.garmin.com/xmlschemas/TrackPointExtension/v1');
+        $xmlWriter->writeAttributeNs(
+            'xmlns',
+            'gpxtpx',
+            null,
+            'http://www.garmin.com/xmlschemas/TrackPointExtension/v1'
+        );
         $xmlWriter->writeAttributeNs('xmlns', 'gpxx', null, 'http://www.garmin.com/xmlschemas/GpxExtensions/v3');
         $xmlWriter->writeAttributeNs('xmlns', 'xsi', null, 'http://www.w3.org/2001/XMLSchema-instance');
 
@@ -55,13 +62,13 @@ class GPX extends AbstractDumper
      * @param XMLWriter $xmlWriter The XML writer.
      * @param Workout $workout The workout.
      */
-    protected function writeTracks(XMLWriter $xmlWriter, Workout $workout)
+    private function writeTracks(XMLWriter $xmlWriter, Workout $workout)
     {
         foreach ($workout->getTracks() as $track) {
             $xmlWriter->startElement('trk');
             $xmlWriter->writeElement('type', $track->getSport());
             $xmlWriter->startElement('trkseg');
-            $this->writeTrackPoints($xmlWriter, $track->getTrackpoints());
+            $this->writeTrackPoints($xmlWriter, $track->getTrackPoints());
             $xmlWriter->endElement();
             $xmlWriter->endElement();
         }
@@ -79,11 +86,11 @@ class GPX extends AbstractDumper
             $xmlWriter->startElement('trkpt');
 
             // Location.
-            $xmlWriter->writeAttribute('lat', $trackPoint->getLatitude());
-            $xmlWriter->writeAttribute('lon', $trackPoint->getLongitude());
+            $xmlWriter->writeAttribute('lat', (string)$trackPoint->getLatitude());
+            $xmlWriter->writeAttribute('lon', (string)$trackPoint->getLongitude());
 
             // Elevation.
-            $xmlWriter->writeElement('ele', $trackPoint->getElevation());
+            $xmlWriter->writeElement('ele', (string)$trackPoint->getElevation());
 
             // Time of position
             $dateTime = clone $trackPoint->getDateTime();
@@ -104,14 +111,14 @@ class GPX extends AbstractDumper
      * @param ExtensionInterface[] $extensions The extensions to write.
      * @throws InvalidArgumentException If an extension is not known.
      */
-    protected function writeExtensions(XMLWriter $xmlWriter, array $extensions)
+    private function writeExtensions(XMLWriter $xmlWriter, array $extensions)
     {
         $xmlWriter->startElement('extensions');
         foreach ($extensions as $extension) {
-            switch ($extension->getID()) {
-                case HR::ID:
+            switch ($extension::ID()) {
+                case HR::ID():
                     $xmlWriter->startElementNs('gpxtpx', 'TrackPointExtension', null);
-                    $xmlWriter->writeElementNs('gpxtpx', 'hr', null, $extension->getValue());
+                    $xmlWriter->writeElementNs('gpxtpx', 'hr', null, (string)$extension->value());
                     $xmlWriter->endElement();
                     break;
             }
@@ -125,12 +132,12 @@ class GPX extends AbstractDumper
      * @param XMLWriter $xmlWriter The XML writer.
      * @param Workout $workout The workout.
      */
-    protected function writeMetaData(XMLWriter $xmlWriter, Workout $workout)
+    private function writeMetaData(XMLWriter $xmlWriter, Workout $workout)
     {
         $xmlWriter->startElement('metadata');
         if ($workout->getAuthor() !== null) {
             $xmlWriter->startElement('author');
-            $xmlWriter->writeElement('name', $workout->getAuthor()->getName());
+            $xmlWriter->writeElement('name', $workout->getAuthor()->name());
             $xmlWriter->endElement();
         }
         $xmlWriter->endElement();

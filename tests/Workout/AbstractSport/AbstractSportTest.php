@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tests\Workout\AbstractSport;
 
+use SportTrackerConnector\Core\Workout\AbstractSportMapper;
 use SportTrackerConnector\Core\Workout\SportMapperInterface;
 
 /**
@@ -9,20 +12,26 @@ use SportTrackerConnector\Core\Workout\SportMapperInterface;
  */
 class AbstractSportTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Test get sport from code returns correct sport.
      */
     public function testGetSportFromCodeReturnsCorrectSport()
     {
-        $mock = $this->getMockBuilder('SportTrackerConnector\Core\Workout\AbstractSportMapper')
+        $mock = $this->getMockBuilder(AbstractSportMapper::class)
             ->setMethods(array('getMap'))
             ->getMockForAbstractClass();
-        $mock->expects($this->once())->method('getMap')->willReturn(
-            array(SportMapperInterface::SWIMMING => 'swim_sport', SportMapperInterface::GOLF => 'golf')
-        );
+        $mock->expects(self::once())
+            ->method('getMap')
+            ->willReturn(
+                array(
+                    SportMapperInterface::SWIMMING => 'swim_sport',
+                    SportMapperInterface::GOLF => 'golf'
+                )
+            );
+
+        /** @var AbstractSportMapper $mock */
         $actual = $mock->getSportFromCode('swim_sport');
-        $this->assertSame(SportMapperInterface::SWIMMING, $actual);
+        self::assertSame(SportMapperInterface::SWIMMING, $actual);
     }
 
     /**
@@ -30,12 +39,16 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetSportFromCodeReturnsOtherSportIfCodeNotDefined()
     {
-        $mock = $this->getMockBuilder('SportTrackerConnector\Core\Workout\AbstractSportMapper')
+        $mock = $this->getMockBuilder(AbstractSportMapper::class)
             ->setMethods(array('getMap'))
             ->getMockForAbstractClass();
-        $mock->expects($this->once())->method('getMap')->willReturn(array());
+        $mock->expects(self::once())
+            ->method('getMap')
+            ->willReturn(array());
+
+        /** @var AbstractSportMapper $mock */
         $actual = $mock->getSportFromCode('unexisting_code');
-        $this->assertSame(SportMapperInterface::OTHER, $actual);
+        self::assertSame(SportMapperInterface::OTHER, $actual);
     }
 
     /**
@@ -43,12 +56,16 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetCodeFromSportReturnsNULLIfSportIsNotAssociated()
     {
-        $mock = $this->getMockBuilder('SportTrackerConnector\Core\Workout\AbstractSportMapper')
+        $mock = $this->getMockBuilder(AbstractSportMapper::class)
             ->setMethods(array('getMap'))
             ->getMockForAbstractClass();
-        $mock->expects($this->once())->method('getMap')->willReturn(array());
+        $mock->expects(self::once())
+            ->method('getMap')
+            ->willReturn(array());
+
+        /** @var AbstractSportMapper $mock */
         $actual = $mock->getCodeFromSport(SportMapperInterface::SWIMMING);
-        $this->assertNull($actual);
+        self::assertEmpty($actual);
     }
 
     /**
@@ -56,18 +73,22 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetCodeFromSportReturnsOtherSportIfOriginalSportNotDefinedButOtherIsDefined()
     {
-        $mock = $this->getMockBuilder('SportTrackerConnector\Core\Workout\AbstractSportMapper')
+        $mock = $this->getMockBuilder(AbstractSportMapper::class)
             ->setMethods(array('getMap'))
             ->getMockForAbstractClass();
-        $mock->expects($this->once())->method('getMap')->willReturn(
-            array(
-                SportMapperInterface::SWIMMING => 'swim_sport',
-                SportMapperInterface::GOLF => 'golf',
-                SportMapperInterface::OTHER => 'other_sport'
-            )
-        );
+        $mock->expects(self::once())
+            ->method('getMap')
+            ->willReturn(
+                array(
+                    SportMapperInterface::SWIMMING => 'swim_sport',
+                    SportMapperInterface::GOLF => 'golf',
+                    SportMapperInterface::OTHER => 'other_sport'
+                )
+            );
+
+        /** @var AbstractSportMapper $mock */
         $actual = $mock->getCodeFromSport(SportMapperInterface::RUNNING);
-        $this->assertSame('other_sport', $actual);
+        self::assertSame('other_sport', $actual);
     }
 
     /**
@@ -75,17 +96,21 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetCodeFromSportReturnsCorrectSport()
     {
-        $mock = $this->getMockBuilder('SportTrackerConnector\Core\Workout\AbstractSportMapper')
+        $mock = $this->getMockBuilder(AbstractSportMapper::class)
             ->setMethods(array('getMap'))
             ->getMockForAbstractClass();
-        $mock->expects($this->once())->method('getMap')->willReturn(
-            array(
-                SportMapperInterface::SWIMMING => 'swim_sport',
-                SportMapperInterface::RUNNING => 'running_hard',
-                SportMapperInterface::OTHER => 'other_sport'
-            )
-        );
+        $mock->expects(self::once())
+            ->method('getMap')
+            ->willReturn(
+                array(
+                    SportMapperInterface::SWIMMING => 'swim_sport',
+                    SportMapperInterface::RUNNING => 'running_hard',
+                    SportMapperInterface::OTHER => 'other_sport'
+                )
+            );
+
+        /** @var AbstractSportMapper $mock */
         $actual = $mock->getCodeFromSport(SportMapperInterface::RUNNING);
-        $this->assertSame('running_hard', $actual);
+        self::assertSame('running_hard', $actual);
     }
 }

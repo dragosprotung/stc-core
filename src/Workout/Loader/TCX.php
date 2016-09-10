@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Loader;
 
 use DateTime;
@@ -16,7 +18,6 @@ use SportTrackerConnector\Core\Workout\Workout;
  */
 class TCX extends AbstractLoader
 {
-
     /**
      * {@inheritdoc}
      */
@@ -38,9 +39,9 @@ class TCX extends AbstractLoader
             foreach ($simpleXMLActivity->Lap as $lap) {
                 foreach ($lap->Track as $track) {
                     foreach ($track->Trackpoint as $trackPoint) {
-                        $dateTime = new DateTime($trackPoint->Time);
-                        $latitude = (string)$trackPoint->Position->LatitudeDegrees;
-                        $longitude = (string)$trackPoint->Position->LongitudeDegrees;
+                        $dateTime = new DateTime((string)$trackPoint->Time);
+                        $latitude = (float)$trackPoint->Position->LatitudeDegrees;
+                        $longitude = (float)$trackPoint->Position->LongitudeDegrees;
 
                         $workoutTrackPoint = new TrackPoint($latitude, $longitude, $dateTime);
                         $workoutTrackPoint->setElevation(round((float)$trackPoint->AltitudeMeters, 2));

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Loader;
 
+use League\Flysystem\UnreadableFileException;
 use SportTrackerConnector\Core\Workout\Workout;
 
 /**
@@ -22,6 +25,8 @@ interface LoaderInterface
      *
      * @param string $file The path to the file to load.
      * @return Workout
+     *
+     * @throws UnreadableFileException
      */
     public function fromFile($file);
 }

@@ -1,9 +1,9 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout;
 
-use DateTime;
-use InvalidArgumentException;
 use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
 
 /**
@@ -11,7 +11,6 @@ use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
  */
 class TrackPoint
 {
-
     /**
      * Latitude of the point.
      *
@@ -43,7 +42,7 @@ class TrackPoint
     /**
      * The time for the point.
      *
-     * @var DateTime
+     * @var \DateTime
      */
     protected $dateTime;
 
@@ -59,9 +58,9 @@ class TrackPoint
      *
      * @param float $latitude The latitude.
      * @param float $longitude The longitude.
-     * @param DateTime $dateTime The date and time of the point.
+     * @param \DateTime $dateTime The date and time of the point.
      */
-    public function __construct($latitude, $longitude, DateTime $dateTime)
+    public function __construct(float $latitude, float $longitude, \DateTime $dateTime)
     {
         $this->setLatitude($latitude);
         $this->setLongitude($longitude);
@@ -72,14 +71,9 @@ class TrackPoint
      * Set the elevation.
      *
      * @param float $elevation The elevation.
-     * @throws InvalidArgumentException If the elevation is not a number.
      */
-    public function setElevation($elevation)
+    public function setElevation(float $elevation)
     {
-        if ($elevation !== null && !is_numeric($elevation)) {
-            throw new InvalidArgumentException('Elevation for a tracking point must be a number.');
-        }
-
         $this->elevation = $elevation;
     }
 
@@ -88,7 +82,7 @@ class TrackPoint
      *
      * @return float
      */
-    public function getElevation()
+    public function getElevation() : float
     {
         return $this->elevation;
     }
@@ -123,7 +117,7 @@ class TrackPoint
      */
     public function addExtension(ExtensionInterface $extension)
     {
-        $this->extensions[$extension->getID()] = $extension;
+        $this->extensions[$extension::ID()] = $extension;
     }
 
     /**
@@ -134,7 +128,7 @@ class TrackPoint
      */
     public function hasExtension($idExtension)
     {
-        return isset($this->extensions[$idExtension]);
+        return array_key_exists($idExtension, $this->extensions);
     }
 
     /**
@@ -147,7 +141,7 @@ class TrackPoint
     public function getExtension($idExtension)
     {
         if ($this->hasExtension($idExtension) !== true) {
-            throw new \OutOfBoundsException('Extension "' . $idExtension . '" not found.');
+            throw new \OutOfBoundsException(sprintf('Extension "%s" not found.', $idExtension));
         }
 
         return $this->extensions[$idExtension];
@@ -158,7 +152,7 @@ class TrackPoint
      *
      * @param float $latitude The latitude.
      */
-    public function setLatitude($latitude)
+    public function setLatitude(float $latitude)
     {
         $this->latitude = $latitude;
     }
@@ -168,7 +162,7 @@ class TrackPoint
      *
      * @return float
      */
-    public function getLatitude()
+    public function getLatitude() : float
     {
         return $this->latitude;
     }
@@ -177,7 +171,7 @@ class TrackPoint
      * Set the longitude.
      * @param float $longitude The longitude.
      */
-    public function setLongitude($longitude)
+    public function setLongitude(float $longitude)
     {
         $this->longitude = $longitude;
     }
@@ -187,7 +181,7 @@ class TrackPoint
      *
      * @return float
      */
-    public function getLongitude()
+    public function getLongitude() : float
     {
         return $this->longitude;
     }
@@ -195,9 +189,9 @@ class TrackPoint
     /**
      * Set the date time of the point.
      *
-     * @param DateTime $dateTime The date time of the point.
+     * @param \DateTime $dateTime The date time of the point.
      */
-    public function setDateTime(DateTime $dateTime)
+    public function setDateTime(\DateTime $dateTime)
     {
         $this->dateTime = $dateTime;
     }
@@ -205,9 +199,9 @@ class TrackPoint
     /**
      * Get the date time of the point.
      *
-     * @return DateTime
+     * @return \DateTime
      */
-    public function getDateTime()
+    public function getDateTime() : \DateTime
     {
         return $this->dateTime;
     }
@@ -222,6 +216,7 @@ class TrackPoint
         if ($distance !== null) {
             $distance = (float)$distance;
         }
+
         $this->distance = $distance;
     }
 
@@ -230,7 +225,7 @@ class TrackPoint
      *
      * @return boolean
      */
-    public function hasDistance()
+    public function hasDistance() : bool
     {
         return $this->distance !== null;
     }
@@ -251,7 +246,7 @@ class TrackPoint
      * @param TrackPoint $trackPoint The other point.
      * @return float The distance in meters.
      */
-    public function distance(TrackPoint $trackPoint)
+    public function distance(TrackPoint $trackPoint)  : float
     {
         $earthRadius = 6371000;
 
@@ -264,11 +259,12 @@ class TrackPoint
         $lonDelta = $lonTo - $lonFrom;
 
         $angle = 2 * asin(
-            sqrt(
-                pow(sin($latDelta / 2), 2) +
-                cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)
-            )
-        );
+                sqrt(
+                    pow(sin($latDelta / 2), 2) +
+                    cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)
+                )
+            );
+
         return $angle * $earthRadius;
     }
 
@@ -278,7 +274,7 @@ class TrackPoint
      * @param TrackPoint $trackPoint The other point.
      * @return float
      */
-    public function speed(TrackPoint $trackPoint)
+    public function speed(TrackPoint $trackPoint)  : float
     {
         $start = $this->getDateTime();
         $end = $trackPoint->getDateTime();
@@ -286,7 +282,7 @@ class TrackPoint
         $secondsDifference = $dateDiff->days * 86400 + $dateDiff->h * 3600 + $dateDiff->i * 60 + $dateDiff->s;
 
         if ($secondsDifference === 0) {
-            return 0;
+            return 0.0;
         }
 
         if ($this->hasDistance() === true && $trackPoint->hasDistance()) {

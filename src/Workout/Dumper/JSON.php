@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Dumper;
 
 use DateTime;
@@ -13,18 +15,17 @@ use SportTrackerConnector\Core\Workout\Workout;
  */
 class JSON extends AbstractDumper
 {
-
     /**
      * {@inheritdoc}
      */
-    public function dumpToString(Workout $workout)
+    public function dumpToString(Workout $workout) : string
     {
         $data = array();
         $tracks = $workout->getTracks();
         foreach ($tracks as $track) {
             $data[] = array(
                 'workout' => array(
-                    'points' => $this->writeTrackPoints($track->getTrackpoints())
+                    'points' => $this->writeTrackPoints($track->getTrackPoints())
                 )
             );
         }
@@ -65,11 +66,11 @@ class JSON extends AbstractDumper
      * @param ExtensionInterface[] $extensions The extensions to write.
      * @return array
      */
-    protected function writeExtensions(array $extensions)
+    private function writeExtensions(array $extensions)
     {
         $return = array();
         foreach ($extensions as $extension) {
-            $return[$extension->getID()] = $extension->getValue();
+            $return[$extension::ID()] = $extension->value();
         }
 
         return $return;

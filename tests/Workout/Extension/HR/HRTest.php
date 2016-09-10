@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tests\Workout\Extension\HR;
 
 use SportTrackerConnector\Core\Workout\Extension\HR;
@@ -9,14 +11,12 @@ use SportTrackerConnector\Core\Workout\Extension\HR;
  */
 class HRTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Test get the ID.
      */
     public function testGetID()
     {
-        $hr = new HR();
-        $this->assertSame(HR::ID, $hr->getID());
+        self::assertSame('HR', HR::ID());
     }
 
     /**
@@ -41,10 +41,9 @@ class HRTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetValueValid($value)
     {
-        $hr = new HR();
-        $hr->setValue($value);
+        $hr = new HR($value);
 
-        $this->assertSame($value, $hr->getValue());
+        self::assertSame($value, $hr->value());
     }
 
     /**
@@ -73,10 +72,9 @@ class HRTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetValueInvalid($value)
     {
-        $hr = new HR();
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The value for the HR must be an integer and between 0 and 230.');
 
-        $this->setExpectedException('InvalidArgumentException', 'The value for the HR must be an integer and between 0 and 230.');
-
-        $hr->setValue($value);
+        new HR($value);
     }
 }

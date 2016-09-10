@@ -1,41 +1,34 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tests\Workout\Loader\AbstractLoader;
 
-use org\bovigo\vfs\vfsStream;
+use League\Flysystem\Adapter\NullAdapter;
+use League\Flysystem\FileNotFoundException;
+use League\Flysystem\Filesystem;
+use League\Flysystem\UnreadableFileException;
+use SportTrackerConnector\Core\Workout\Loader\AbstractLoader;
 
 /**
  * Test for \SportTrackerConnector\Core\Workout\Loader\AbstractLoader
  */
 class AbstractLoaderTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * The root folder of vfsStream for testing.
-     *
-     * @var \org\bovigo\vfs\vfsStreamDirectory
-     */
-    private $root;
-
-    /**
-     * Set up test environment.
-     */
-    public function setUp()
-    {
-        $this->root = vfsStream::setup();
-    }
-
     /**
      * Test load from file throws exception if file does not exists.
      */
     public function testLoadFromFileThrowsExceptionIfFileDoesNotExists()
     {
-        $mock = $this->getMockForAbstractClass('SportTrackerConnector\Core\Workout\Loader\AbstractLoader');
+        $filesystem = new Filesystem(new NullAdapter());
+        $mock = $this->getMockForAbstractClass(AbstractLoader::class, array($filesystem));
 
-        $file = vfsStream::url('root/workout.tst');
+        $file = 'workout.tst';
 
-        $this->setExpectedException('InvalidArgumentException', 'File "vfs://root/workout.tst" is not readable.');
+        $this->expectException(FileNotFoundException::class);
+        $this->expectExceptionMessage('File not found at path: workout.tst');
 
+        /** @var AbstractLoader $mock */
         $mock->fromFile($file);
     }
 
@@ -44,14 +37,21 @@ class AbstractLoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoadFromFileThrowsExceptionIfFileDoesExistsButIsNotReadable()
     {
-        $mock = $this->getMockForAbstractClass('SportTrackerConnector\Core\Workout\Loader\AbstractLoader');
+        $adapter = new class extends NullAdapter
+        {
+            public function has($path)
+            {
+                return true;
+            }
+        };
+        $filesystem = new Filesystem($adapter);
+        $mock = $this->getMockForAbstractClass(AbstractLoader::class, array($filesystem));
 
-        $file = vfsStream::url('root/workout.tst');
-        touch($file);
-        chmod($file, 000);
+        $file = 'workout.tst';
 
-        $this->setExpectedException('InvalidArgumentException', 'File "vfs://root/workout.tst" is not readable.');
+        $this->expectException(UnreadableFileException::class);
 
+        /** @var AbstractLoader $mock */
         $mock->fromFile($file);
     }
 
@@ -60,15 +60,30 @@ class AbstractLoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testDumpToFileCallsDumpToString()
     {
-        $mock = $this->getMockBuilder('SportTrackerConnector\Core\Workout\Loader\AbstractLoader')
+        $adapter = new class extends NullAdapter
+        {
+            public function has($path)
+            {
+                return true;
+            }
+
+            public function read($path)
+            {
+                return array('contents' => 'workout data');
+            }
+        };
+        $filesystem = new Filesystem($adapter);
+        $mock = $this->getMockBuilder(AbstractLoader::class)
+            ->setConstructorArgs(array($filesystem))
             ->setMethods(array('fromString'))
             ->getMockForAbstractClass();
 
-        $fileMock = vfsStream::url('root/workout.tst');
-        file_put_contents($fileMock, 'workout data');
+        $mock
+            ->expects(self::once())
+            ->method('fromString')
+            ->with('workout data');
 
-        $mock->expects($this->once())->method('fromString')->with('workout data');
-
-        $mock->fromFile($fileMock);
+        /** @var AbstractLoader $mock */
+        $mock->fromFile('workout.tst');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout;
 
 /**
@@ -7,7 +9,6 @@ namespace SportTrackerConnector\Core\Workout;
  */
 interface SportMapperInterface
 {
-
     const RUNNING = 'running';
 
     const RUNNING_TREADMILL = 'running_treadmill';
@@ -46,7 +47,7 @@ interface SportMapperInterface
      * @param mixed $code The code from the tracker.
      * @return string
      */
-    public function getSportFromCode($code);
+    public function getSportFromCode($code) : string;
 
     /**
      * Get the tracker code for a sport from a SportMapperInterface code.
@@ -54,5 +55,5 @@ interface SportMapperInterface
      * @param string $sport The sport (one of the SportMapperInterface constants)
      * @return mixed
      */
-    public function getCodeFromSport($sport);
+    public function getCodeFromSport($sport) : string;
 }

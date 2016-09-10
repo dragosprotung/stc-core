@@ -1,33 +1,39 @@
 <?php
 
-namespace SportTrackerConnector\Core\Workout\Extension;
+declare(strict_types = 1);
 
-use InvalidArgumentException;
+namespace SportTrackerConnector\Core\Workout\Extension;
 
 /**
  * Heart rate track point extension.
  */
 class HR extends AbstractExtension
 {
-
-    const ID = 'HR';
-
     /**
-     * Name for the extension.
-     *
-     * @var string
+     * {@inheritdoc}
      */
-    protected $name = 'Heart rate';
+    protected function setValue($value)
+    {
+        if ($value !== null && (!is_int($value) || $value < 0 || $value > 230)) {
+            throw new \InvalidArgumentException('The value for the HR must be an integer and between 0 and 230.');
+        }
+
+        parent::setValue($value);
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function setValue($value)
+    public static function ID() : string
     {
-        if ($value !== null && (!is_int($value) || $value < 0 || $value > 230)) {
-            throw new InvalidArgumentException('The value for the HR must be an integer and between 0 and 230.');
-        }
+        return 'HR';
+    }
 
-        parent::setValue($value);
+    /**
+     * {@inheritdoc}
+     */
+    public function name() : string
+    {
+        return 'Heart rate';
     }
 }

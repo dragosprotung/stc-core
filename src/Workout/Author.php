@@ -1,17 +1,16 @@
 <?php
 
-namespace SportTrackerConnector\Core\Workout;
+declare(strict_types = 1);
 
-use InvalidArgumentException;
+namespace SportTrackerConnector\Core\Workout;
 
 /**
  * Author of a workout.
  */
 class Author
 {
-
     /**
-     * The name.
+     * The name of the author.
      *
      * @var string
      */
@@ -22,23 +21,12 @@ class Author
      *
      * @param string $name The name of the author.
      */
-    public function __construct($name = null)
+    public function __construct($name)
     {
-        $this->setName($name);
-    }
-
-    /**
-     * Set the name of the author.
-     *
-     * @param string $name The name.
-     * @throws InvalidArgumentException If the value is not a string or an object implementing the __toString() method.
-     */
-    public function setName($name)
-    {
-        if ($name !== null && (is_string($name)) || (is_object($name) && method_exists($name, '__toString'))) {
+        if (is_string($name) || (is_object($name) && method_exists($name, '__toString'))) {
             $name = (string)$name;
-        } elseif ($name !== null) {
-            throw new InvalidArgumentException('The name of the author must be a string.');
+        } else {
+            throw new \InvalidArgumentException('The name of the author must be a string.');
         }
 
         $this->name = $name;
@@ -49,7 +37,7 @@ class Author
      *
      * @return string
      */
-    public function getName()
+    public function name() : string
     {
         return $this->name;
     }

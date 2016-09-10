@@ -1,49 +1,39 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tracker;
 
 use DateTime;
 use DateTimeZone;
-use Psr\Log\LoggerAwareInterface;
+use SportTrackerConnector\Core\Workout\SportMapperInterface;
 use SportTrackerConnector\Core\Workout\Workout;
-use Psr\Log\LoggerInterface;
 
 /**
  * Interface for trackers.
  */
-interface TrackerInterface extends LoggerAwareInterface
+interface TrackerInterface
 {
-
-    /**
-     * Get a new instance using a config array.
-     *
-     * @param LoggerInterface $logger The logger.
-     * @param array $config The config for the new instance.
-     * @return TrackerInterface
-     */
-    public static function fromConfig(LoggerInterface $logger, array $config);
-
     /**
      * Get the ID of the tracker.
      *
      * @return string
      */
-    public static function getID();
-
-    /**
-     * Set the timezone of the tracker.
-     *
-     * @param DateTimeZone $timeZone The timezone.
-     * @return void
-     */
-    public function setTimeZone(DateTimeZone $timeZone);
+    public static function getID() : string;
 
     /**
      * Get the timezone of the tracker.
      *
      * @return DateTimeZone
      */
-    public function getTimeZone();
+    public function getTimeZone() : DateTimeZone;
+
+    /**
+     * Get offset between the tracker time zone and UTC time zone in seconds.
+     *
+     * @return integer
+     */
+    public function getTimeZoneOffset() : int;
 
     /**
      * Get a list of workouts.
@@ -52,7 +42,7 @@ interface TrackerInterface extends LoggerAwareInterface
      * @param DateTime $endDate The end date for the workouts.
      * @return TrackerListWorkoutsResult[]
      */
-    public function listWorkouts(DateTime $startDate, DateTime $endDate);
+    public function listWorkouts(DateTime $startDate, DateTime $endDate) : array;
 
     /**
      * Upload a workout.
@@ -60,7 +50,7 @@ interface TrackerInterface extends LoggerAwareInterface
      * @param Workout $workout The workout to upload.
      * @return boolean
      */
-    public function uploadWorkout(Workout $workout);
+    public function uploadWorkout(Workout $workout) : bool;
 
     /**
      * Download a workout.
@@ -68,12 +58,12 @@ interface TrackerInterface extends LoggerAwareInterface
      * @param string $idWorkout The ID of the workout to download.
      * @return Workout
      */
-    public function downloadWorkout($idWorkout);
+    public function downloadWorkout($idWorkout) : Workout;
 
     /**
      * Get the sport mapper.
      *
      * @return \SportTrackerConnector\Core\Workout\SportMapperInterface
      */
-    public function getSportMapper();
+    public function getSportMapper() : SportMapperInterface;
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Extension;
 
 /**
@@ -12,19 +14,19 @@ interface ExtensionInterface
      *
      * @return string
      */
-    public function getID();
+    public static function ID() : string;
 
     /**
      * Get the name of the extension.
      *
      * @return string
      */
-    public function getName();
+    public function name() : string;
 
     /**
      * Get the value for the extension.
      *
      * @return string|null
      */
-    public function getValue();
+    public function value();
 }

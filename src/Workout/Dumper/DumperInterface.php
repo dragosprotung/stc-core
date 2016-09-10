@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Dumper;
 
 use SportTrackerConnector\Core\Workout\Workout;
@@ -15,15 +17,14 @@ interface DumperInterface
      * @param Workout $workout The workout to dump.
      * @return string
      */
-    public function dumpToString(Workout $workout);
+    public function dumpToString(Workout $workout) : string;
 
     /**
      * Dump a workout to a file.
      *
      * @param Workout $workout The workout to dump.
      * @param string $outputFile The path to file where to dump the workout.
-     * @param boolean $overwrite Flag if the file should be overwritten if it exists.
      * @return boolean
      */
-    public function dumpToFile(Workout $workout, $outputFile, $overwrite = true);
+    public function dumpToFile(Workout $workout, string $outputFile) : bool;
 }

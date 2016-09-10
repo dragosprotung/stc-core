@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout;
 
 /**
@@ -7,7 +9,6 @@ namespace SportTrackerConnector\Core\Workout;
  */
 abstract class AbstractSportMapper implements SportMapperInterface
 {
-
     /**
      * Get the map between the tracker's sport codes and internal sport codes.
      *
@@ -20,30 +21,28 @@ abstract class AbstractSportMapper implements SportMapperInterface
     /**
      * {@inheritdoc}
      */
-    public function getSportFromCode($code)
+    public function getSportFromCode($code) : string
     {
         $code = strtolower($code);
         $codes = array_flip(static::getMap());
-        if (isset($codes[$code])) {
-            return $codes[$code];
-        }
 
-        return self::OTHER;
+        return $codes[$code] ?? self::OTHER;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getCodeFromSport($sport)
+    public function getCodeFromSport($sport) : string
     {
         $sport = strtolower($sport);
         $codes = static::getMap();
-        if (isset($codes[$sport])) {
+
+        if (array_key_exists($sport, $codes)) {
             return $codes[$sport];
-        } elseif (isset($codes[self::OTHER])) {
+        } elseif (array_key_exists(self::OTHER, $codes)) {
             return $codes[self::OTHER];
         }
 
-        return null;
+        return '';
     }
 }

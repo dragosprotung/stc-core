@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Workout\Dumper;
 
+use League\Flysystem\Exception;
+use League\Flysystem\FilesystemInterface;
 use SportTrackerConnector\Core\Workout\Workout;
-use InvalidArgumentException;
 
 /**
  * Abstract class for dumpers.
@@ -11,16 +14,28 @@ use InvalidArgumentException;
 abstract class AbstractDumper implements DumperInterface
 {
     /**
+     * @var FilesystemInterface
+     */
+    private $filesystem;
+
+    /**
+     * @param FilesystemInterface $filesystem
+     */
+    public function __construct(FilesystemInterface $filesystem)
+    {
+        $this->filesystem = $filesystem;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function dumpToFile(Workout $workout, $outputFile, $overwrite = true)
+    public function dumpToFile(Workout $workout, string $outputFile) : bool
     {
-        if (file_exists($outputFile) !== true && is_writable(dirname($outputFile)) !== true) {
-            throw new InvalidArgumentException('Directory for output file "' . $outputFile . '" is not writable.');
-        } elseif ($overwrite === true && file_exists($outputFile) && is_writable($outputFile) !== true) {
-            throw new InvalidArgumentException('The output file "' . $outputFile . '" is not writable.');
+        $return = $this->filesystem->put($outputFile, $this->dumpToString($workout));
+        if ($return !== true) {
+            throw new Exception(sprintf('Could not write to %s', $outputFile));
         }
 
-        return file_put_contents($outputFile, $this->dumpToString($workout)) !== false;
+        return true;
     }
 }

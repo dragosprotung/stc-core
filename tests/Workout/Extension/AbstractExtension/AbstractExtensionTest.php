@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tests\Workout\Extension\AbstractExtension;
 
+use SportTrackerConnector\Core\Workout\Extension\AbstractExtension;
+
 /**
- * Test for \SportTrackerConnector\Core\Workout\Workout\Extension\AbstractExtension.
+ * Test for workout abstract extension.
  */
 class AbstractExtensionTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Data provider for testSetGetValue();
      *
@@ -34,9 +37,9 @@ class AbstractExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetGetValue($value)
     {
-        $mock = $this->getMockForAbstractClass('SportTrackerConnector\Core\Workout\Extension\AbstractExtension');
-        $mock->setValue($value);
+        $mock = $this->getMockForAbstractClass(AbstractExtension::class, array($value));
 
-        $this->assertSame($value, $mock->getValue());
+        /** @var AbstractExtension $mock */
+        self::assertSame($value, $mock->value());
     }
 }

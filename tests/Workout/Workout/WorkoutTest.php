@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SportTrackerConnector\Core\Tests\Workout\Workout\Workout\Workout;
 
-use SportTrackerConnector\Core\Workout\Workout;
 use SportTrackerConnector\Core\Workout\Author;
+use SportTrackerConnector\Core\Workout\Workout;
 
 class WorkoutTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,10 +17,10 @@ class WorkoutTest extends \PHPUnit_Framework_TestCase
     {
         $workout = new Workout();
 
-        $this->assertNull($workout->getAuthor());
+        self::assertNull($workout->getAuthor());
 
-        $author = new Author();
+        $author = new Author('author');
         $workout->setAuthor($author);
-        $this->assertSame($author, $workout->getAuthor());
+        self::assertSame($author, $workout->getAuthor());
     }
 }
