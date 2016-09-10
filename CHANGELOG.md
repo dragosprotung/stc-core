@@ -6,7 +6,8 @@ All Notable changes to `Sport Tracker Connector core` will be documented in this
 
 ### Changed
 - PHP 7 is now minimum required version
-- Changed constructor signatures to abstract loaders / dumpers 
+- Changed constructor signatures to abstract loaders / dumpers
+- Extracted DateTimeZone
 
 ## 1.0 - 2015-09-01
 

@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Tracker;
 
-use DateTime;
-use DateTimeZone;
 use SportTrackerConnector\Core\Workout\SportMapperInterface;
 use SportTrackerConnector\Core\Workout\Workout;
 
@@ -22,27 +20,13 @@ interface TrackerInterface
     public static function getID() : string;
 
     /**
-     * Get the timezone of the tracker.
-     *
-     * @return DateTimeZone
-     */
-    public function getTimeZone() : DateTimeZone;
-
-    /**
-     * Get offset between the tracker time zone and UTC time zone in seconds.
-     *
-     * @return integer
-     */
-    public function getTimeZoneOffset() : int;
-
-    /**
      * Get a list of workouts.
      *
-     * @param DateTime $startDate The start date for the workouts.
-     * @param DateTime $endDate The end date for the workouts.
+     * @param \DateTime $startDate The start date for the workouts.
+     * @param \DateTime $endDate The end date for the workouts.
      * @return TrackerListWorkoutsResult[]
      */
-    public function listWorkouts(DateTime $startDate, DateTime $endDate) : array;
+    public function listWorkouts(\DateTime $startDate, \DateTime $endDate) : array;
 
     /**
      * Upload a workout.
@@ -63,7 +47,7 @@ interface TrackerInterface
     /**
      * Get the sport mapper.
      *
-     * @return \SportTrackerConnector\Core\Workout\SportMapperInterface
+     * @return SportMapperInterface
      */
     public function getSportMapper() : SportMapperInterface;
 }
