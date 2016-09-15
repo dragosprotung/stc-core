@@ -113,10 +113,16 @@ class Track
      * Get the last track point.
      *
      * @return TrackPoint
+     * @throws \OutOfBoundsException If no track points are defined.
      */
     public function getLastTrackPoint() : TrackPoint
     {
         $lastTrackPoint = end($this->trackPoints);
+
+        if (!$lastTrackPoint instanceof TrackPoint) {
+            throw new \OutOfBoundsException('No track points points defined.');
+        }
+
         reset($this->trackPoints);
 
         return $lastTrackPoint;
