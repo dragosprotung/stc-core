@@ -32,7 +32,7 @@ class TCX extends AbstractLoader
             // Sport.
             $attributes = $simpleXMLActivity->attributes();
             if (isset($attributes['Sport'])) {
-                $workoutTrack->setSport(SportGuesser::getSportFromCode((string)$attributes['Sport']));
+                $workoutTrack->setSport(SportGuesser::sportFromCode((string)$attributes['Sport']));
             }
 
             // Track points.
@@ -70,7 +70,7 @@ class TCX extends AbstractLoader
      * @param SimpleXMLElement $trackPoint The track point from the TCX to parse.
      * @return ExtensionInterface[]
      */
-    private function parseExtensions(SimpleXMLElement $trackPoint)
+    protected function parseExtensions(SimpleXMLElement $trackPoint)
     {
         $return = array();
 

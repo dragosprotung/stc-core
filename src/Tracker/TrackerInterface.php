@@ -17,7 +17,7 @@ interface TrackerInterface
      *
      * @return string
      */
-    public static function getID() : string;
+    public static function ID() : string;
 
     /**
      * Get a list of workouts.
@@ -26,15 +26,7 @@ interface TrackerInterface
      * @param \DateTime $endDate The end date for the workouts.
      * @return TrackerListWorkoutsResult[]
      */
-    public function listWorkouts(\DateTime $startDate, \DateTime $endDate) : array;
-
-    /**
-     * Upload a workout.
-     *
-     * @param Workout $workout The workout to upload.
-     * @return boolean
-     */
-    public function uploadWorkout(Workout $workout) : bool;
+    public function workouts(\DateTime $startDate, \DateTime $endDate) : array;
 
     /**
      * Download a workout.
@@ -42,12 +34,20 @@ interface TrackerInterface
      * @param string $idWorkout The ID of the workout to download.
      * @return Workout
      */
-    public function downloadWorkout($idWorkout) : Workout;
+    public function workout($idWorkout) : Workout;
+
+    /**
+     * Upload a workout.
+     *
+     * @param Workout $workout The workout to upload.
+     * @return boolean
+     */
+    public function post(Workout $workout) : bool;
 
     /**
      * Get the sport mapper.
      *
      * @return SportMapperInterface
      */
-    public function getSportMapper() : SportMapperInterface;
+    public function sportMapper() : SportMapperInterface;
 }

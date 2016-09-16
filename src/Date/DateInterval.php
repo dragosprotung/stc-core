@@ -14,7 +14,7 @@ class DateInterval extends \DateInterval
      *
      * @return integer
      */
-    public function getTotalSeconds() : int
+    public function totalSeconds() : int
     {
         return $this->days * 86400 + $this->h * 3600 + $this->i * 60 + $this->s;
     }

@@ -22,9 +22,8 @@ class TCX extends AbstractDumper
     /**
      * {@inheritdoc}
      */
-    public function dumpToString(Workout $workout) : string
+    public function toString(Workout $workout) : string
     {
-
         $xmlWriter = new XMLWriter();
         $xmlWriter->openMemory();
         $xmlWriter->setIndent(true);
@@ -57,22 +56,22 @@ class TCX extends AbstractDumper
     private function writeTracks(XMLWriter $xmlWriter, Workout $workout)
     {
         $xmlWriter->startElement('Activities');
-        foreach ($workout->getTracks() as $track) {
+        foreach ($workout->tracks() as $track) {
             $xmlWriter->startElement('Activity');
-            $xmlWriter->writeAttribute('Sport', ucfirst($track->getSport()));
+            $xmlWriter->writeAttribute('Sport', ucfirst($track->sport()));
             // Use the start date time as the ID. This could be anything.
-            $xmlWriter->writeElement('Id', $this->formatDateTime($track->getStartDateTime()));
+            $xmlWriter->writeElement('Id', $this->formatDateTime($track->startDateTime()));
 
             $xmlWriter->startElement('Lap');
 
-            $xmlWriter->writeAttribute('StartTime', $this->formatDateTime($track->getStartDateTime()));
-            $xmlWriter->writeElement('TotalTimeSeconds', (string)$track->getDuration()->getTotalSeconds());
-            $xmlWriter->writeElement('DistanceMeters', (string)$track->getLength());
+            $xmlWriter->writeAttribute('StartTime', $this->formatDateTime($track->startDateTime()));
+            $xmlWriter->writeElement('TotalTimeSeconds', (string)$track->duration()->totalSeconds());
+            $xmlWriter->writeElement('DistanceMeters', (string)$track->length());
 
             $this->writeLapHeartRateDate($xmlWriter, $track);
 
             $xmlWriter->startElement('Track');
-            $this->writeTrackPoints($xmlWriter, $track->getTrackPoints());
+            $this->writeTrackPoints($xmlWriter, $track->trackPoints());
             $xmlWriter->endElement();
 
             $xmlWriter->endElement();
@@ -94,14 +93,14 @@ class TCX extends AbstractDumper
             $xmlWriter->startElement('Trackpoint');
 
             // Time of position
-            $dateTime = clone $trackPoint->getDateTime();
+            $dateTime = clone $trackPoint->dateTime();
             $dateTime->setTimezone(new DateTimeZone('UTC'));
             $xmlWriter->writeElement('Time', $this->formatDateTime($dateTime));
 
             // Position.
             $xmlWriter->startElement('Position');
-            $xmlWriter->writeElement('LatitudeDegrees', (string)$trackPoint->getLatitude());
-            $xmlWriter->writeElement('LongitudeDegrees', (string)$trackPoint->getLongitude());
+            $xmlWriter->writeElement('LatitudeDegrees', (string)$trackPoint->latitude());
+            $xmlWriter->writeElement('LongitudeDegrees', (string)$trackPoint->longitude());
             $xmlWriter->endElement();
 
             // Elevation.
@@ -113,7 +112,7 @@ class TCX extends AbstractDumper
             }
 
             // Extensions.
-            $this->writeExtensions($xmlWriter, $trackPoint->getExtensions());
+            $this->writeExtensions($xmlWriter, $trackPoint->extensions());
 
             $xmlWriter->endElement();
         }
@@ -125,13 +124,13 @@ class TCX extends AbstractDumper
      * @param XMLWriter $xmlWriter The XML writer.
      * @param Track $track The track to write.
      */
-    private function writeLapHeartRateDate(XMLWriter $xmlWriter, Track $track)
+    protected function writeLapHeartRateDate(XMLWriter $xmlWriter, Track $track)
     {
         $averageHeartRate = array();
         $maxHearRate = null;
-        foreach ($track->getTrackPoints() as $trackPoint) {
+        foreach ($track->trackPoints() as $trackPoint) {
             if ($trackPoint->hasExtension(HR::ID()) === true) {
-                $pointHearRate = $trackPoint->getExtension(HR::ID())->value();
+                $pointHearRate = $trackPoint->extension(HR::ID())->value();
 
                 $maxHearRate = max($maxHearRate, $pointHearRate);
                 $averageHeartRate[] = $pointHearRate;
@@ -161,7 +160,7 @@ class TCX extends AbstractDumper
      * @param ExtensionInterface[] $extensions The extensions to write.
      * @throws InvalidArgumentException If an extension is not known.
      */
-    private function writeExtensions(XMLWriter $xmlWriter, array $extensions)
+    protected function writeExtensions(XMLWriter $xmlWriter, array $extensions)
     {
         foreach ($extensions as $extension) {
             switch ($extension::ID()) {
@@ -176,10 +175,11 @@ class TCX extends AbstractDumper
 
     /**
      * Format a DateTime object for TCX format.
+     *
      * @param DateTime $dateTime The date time to format.
      * @return string
      */
-    private function formatDateTime(DateTime $dateTime)
+    protected function formatDateTime(DateTime $dateTime)
     {
         return $dateTime->format('Y-m-d\TH:i:s\Z');
     }

@@ -7,40 +7,62 @@ namespace SportTrackerConnector\Core\Tracker;
 /**
  * One result item when fetching a list of workouts from a tracker.
  */
-class TrackerListWorkoutsResult
+final class TrackerListWorkoutsResult
 {
     /**
      * The ID of the workout.
      *
      * @var integer
      */
-    public $idWorkout;
+    private $idWorkout;
 
     /**
      * The sport. One of the constants from SportMapperInterface.
      *
      * @var string
      */
-    public $sport;
+    private $sport;
 
     /**
      * The start date time of the workout.
      *
      * @var \DateTime
      */
-    public $startDateTime;
+    private $startDateTime;
 
     /**
-     * Constructor.
-     *
-     * @param integer $idWorkout The ID of the workout.
+     * @param string $idWorkout The ID of the workout.
      * @param string $sport The sport. One of the constants from SportMapperInterface.
      * @param \DateTime $startDateTime The start date time of the workout.
      */
-    public function __construct($idWorkout, $sport, \DateTime $startDateTime)
+    public function __construct(string $idWorkout, string $sport, \DateTime $startDateTime)
     {
         $this->idWorkout = $idWorkout;
         $this->sport = $sport;
         $this->startDateTime = $startDateTime;
+    }
+
+    /**
+     * @return int
+     */
+    public function idWorkout(): int
+    {
+        return $this->idWorkout;
+    }
+
+    /**
+     * @return string
+     */
+    public function sport(): string
+    {
+        return $this->sport;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function startDateTime(): \DateTime
+    {
+        return $this->startDateTime;
     }
 }

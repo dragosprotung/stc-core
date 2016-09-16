@@ -38,7 +38,7 @@ class Workout
      *
      * @return Author
      */
-    public function getAuthor()
+    public function author()
     {
         return $this->author;
     }
@@ -72,7 +72,7 @@ class Workout
      *
      * @return Track[]
      */
-    public function getTracks()
+    public function tracks()
     {
         return $this->tracks;
     }

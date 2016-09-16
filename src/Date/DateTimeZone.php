@@ -14,7 +14,7 @@ class DateTimeZone extends \DateTimeZone
      *
      * @return integer
      */
-    public function getUTCTimeZoneOffset() : int
+    public function UTCTimeZoneOffset() : int
     {
         $originDateTime = new \DateTime('now', $this);
 

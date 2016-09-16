@@ -22,7 +22,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase
     /**
      * Test dumping a workout to a GPX string.
      */
-    public function testDumpToStringSingleTrack()
+    public function testToStringSingleTrack()
     {
         $workout = new Workout();
         $workout->addTrack(
@@ -40,7 +40,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase
 
         $filesystemMock = $this->createMock(FilesystemInterface::class);
         $gpx = new JSON($filesystemMock);
-        $actual = $gpx->dumpToString($workout);
+        $actual = $gpx->toString($workout);
 
         self::assertJsonStringEqualsJsonFile(__DIR__ . '/Expected/' . $this->getName() . '.json', $actual);
     }
@@ -48,7 +48,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase
     /**
      * Test dumping a workout to a GPX string.
      */
-    public function testDumpToStringMultiTrack()
+    public function testToStringMultiTrack()
     {
         $workout = new Workout();
         $workout->addTrack(
@@ -75,7 +75,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase
 
         $filesystemMock = $this->createMock(FilesystemInterface::class);
         $gpx = new JSON($filesystemMock);
-        $actual = $gpx->dumpToString($workout);
+        $actual = $gpx->toString($workout);
 
         self::assertJsonStringEqualsJsonFile(__DIR__ . '/Expected/' . $this->getName() . '.json', $actual);
     }

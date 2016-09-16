@@ -116,7 +116,7 @@ class TCXTest extends \PHPUnit_Framework_TestCase
         $trackPoint->setElevation($elevation);
         $trackPoint->setDistance($distance);
         if ($heartRate !== null) {
-            $trackPoint->setExtensions(array(new HR($heartRate)));
+            $trackPoint->addExtension(new HR($heartRate));
         }
 
         return $trackPoint;

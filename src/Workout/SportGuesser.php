@@ -15,7 +15,7 @@ class SportGuesser
      * @param string $code The code from the tracker.
      * @return string
      */
-    public static function getSportFromCode(string $code) : string
+    public static function sportFromCode(string $code) : string
     {
         switch (strtolower(trim($code))) {
             case SportMapperInterface::RUNNING:

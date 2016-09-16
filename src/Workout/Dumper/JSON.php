@@ -18,14 +18,14 @@ class JSON extends AbstractDumper
     /**
      * {@inheritdoc}
      */
-    public function dumpToString(Workout $workout) : string
+    public function toString(Workout $workout) : string
     {
         $data = array();
-        $tracks = $workout->getTracks();
+        $tracks = $workout->tracks();
         foreach ($tracks as $track) {
             $data[] = array(
                 'workout' => array(
-                    'points' => $this->writeTrackPoints($track->getTrackPoints())
+                    'points' => $this->writeTrackPoints($track->trackPoints())
                 )
             );
         }
@@ -43,15 +43,15 @@ class JSON extends AbstractDumper
     {
         $points = array();
         foreach ($trackPoints as $trackPoint) {
-            $dateTime = clone $trackPoint->getDateTime();
+            $dateTime = clone $trackPoint->dateTime();
             $dateTime->setTimezone(new DateTimeZone('UTC'));
             $point = array(
                 'time' => $dateTime->format(DateTime::W3C),
-                'latitude' => $trackPoint->getLatitude(),
-                'longitude' => $trackPoint->getLongitude(),
+                'latitude' => $trackPoint->latitude(),
+                'longitude' => $trackPoint->longitude(),
                 'elevation' => $trackPoint->getElevation(),
                 'distance' => $trackPoint->getDistance(),
-                'extensions' => $this->writeExtensions($trackPoint->getExtensions())
+                'extensions' => $this->writeExtensions($trackPoint->extensions())
             );
 
             $points[] = $point;
@@ -66,7 +66,7 @@ class JSON extends AbstractDumper
      * @param ExtensionInterface[] $extensions The extensions to write.
      * @return array
      */
-    private function writeExtensions(array $extensions)
+    protected function writeExtensions(array $extensions)
     {
         $return = array();
         foreach ($extensions as $extension) {

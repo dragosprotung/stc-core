@@ -9,7 +9,6 @@ use SportTrackerConnector\Core\Workout\Workout;
 
 class WorkoutTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Test setting/getting the author.
      */
@@ -17,10 +16,10 @@ class WorkoutTest extends \PHPUnit_Framework_TestCase
     {
         $workout = new Workout();
 
-        self::assertNull($workout->getAuthor());
+        self::assertNull($workout->author());
 
         $author = new Author('author');
         $workout->setAuthor($author);
-        self::assertSame($author, $workout->getAuthor());
+        self::assertSame($author, $workout->author());
     }
 }

@@ -25,7 +25,7 @@ class TrackTest extends \PHPUnit_Framework_TestCase
             ->method('recomputeStartDateTime');
 
         /** @var Track $track */
-        $track->getStartDateTime();
+        $track->startDateTime();
     }
 
     /**
@@ -39,7 +39,7 @@ class TrackTest extends \PHPUnit_Framework_TestCase
             ->method('recomputeEndDateTime');
 
         /** @var Track $track */
-        $track->getEndDateTime();
+        $track->endDateTime();
     }
 
     /**
@@ -53,7 +53,7 @@ class TrackTest extends \PHPUnit_Framework_TestCase
             ->method('recomputeLength');
 
         /** @var Track $track */
-        $track->getLength();
+        $track->length();
     }
 
     /**
@@ -61,7 +61,7 @@ class TrackTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecomputeStartDateTime()
     {
-        $track = $this->createPartialMock(Track::class, array('getTrackPoints'));
+        $track = $this->createPartialMock(Track::class, array('trackPoints'));
         $trackPoints = array(
             $this->getTrackPointMock(0, 0, 'now'),
             $this->getTrackPointMock(0, 0, '-1 hour'),
@@ -70,11 +70,11 @@ class TrackTest extends \PHPUnit_Framework_TestCase
         );
         $track
             ->expects(self::once())
-            ->method('getTrackPoints')
+            ->method('trackPoints')
             ->will(self::returnValue($trackPoints));
 
         /** @var Track $track */
-        $actual = $track->getStartDateTime();
+        $actual = $track->startDateTime();
 
         $expected = new DateTime('2014-01-01 00:00:00');
         self::assertEquals($expected, $actual);
@@ -85,7 +85,7 @@ class TrackTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecomputeEndDateTime()
     {
-        $track = $this->createPartialMock(Track::class, array('getTrackPoints'));
+        $track = $this->createPartialMock(Track::class, array('trackPoints'));
         $trackPoints = array(
             $this->getTrackPointMock(0, 0, 'now'),
             $this->getTrackPointMock(0, 0, '-1 hour'),
@@ -94,11 +94,11 @@ class TrackTest extends \PHPUnit_Framework_TestCase
         );
         $track
             ->expects(self::once())
-            ->method('getTrackPoints')
+            ->method('trackPoints')
             ->will(self::returnValue($trackPoints));
 
         /** @var Track $track */
-        $actual = $track->getEndDateTime();
+        $actual = $track->endDateTime();
 
         $expected = new DateTime('2034-01-01 00:00:00');
         self::assertEquals($expected, $actual);
@@ -109,15 +109,15 @@ class TrackTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetDuration()
     {
-        $track = $this->createPartialMock(Track::class, array('getStartDateTime', 'getEndDateTime'));
+        $track = $this->createPartialMock(Track::class, array('startDateTime', 'endDateTime'));
         $startDateTime = new DateTime('now');
         $endDateTime = new DateTime('+1 hour +5 minutes +20 seconds');
-        $track->expects(self::once())->method('getStartDateTime')->will(self::returnValue($startDateTime));
-        $track->expects(self::once())->method('getEndDateTime')->will(self::returnValue($endDateTime));
+        $track->expects(self::once())->method('startDateTime')->will(self::returnValue($startDateTime));
+        $track->expects(self::once())->method('endDateTime')->will(self::returnValue($endDateTime));
 
         $expected = new DateInterval('PT1H5M20S');
         /** @var Track $track */
-        $actual = $track->getDuration();
+        $actual = $track->duration();
 
         self::assertEquals($expected, $actual);
         self::assertSame('1h:5m:20s', $actual->format('%hh:%im:%ss'));
@@ -128,7 +128,7 @@ class TrackTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecomputeLength()
     {
-        $track = $this->createPartialMock(Track::class, array('getTrackPoints'));
+        $track = $this->createPartialMock(Track::class, array('trackPoints'));
         $trackPoints = array(
             $this->getTrackPointMock(-38.691450, 176.079795),
             $this->getTrackPointMock(-38.719038, 176.081491),
@@ -137,7 +137,7 @@ class TrackTest extends \PHPUnit_Framework_TestCase
         );
         $track
             ->expects(self::once())
-            ->method('getTrackPoints')
+            ->method('trackPoints')
             ->will(self::returnValue($trackPoints));
 
         $expected = 34067.903477;
@@ -152,13 +152,13 @@ class TrackTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecomputeLengthReturnsZeroIfLessThankTwoPoints()
     {
-        $track = $this->createPartialMock(Track::class, array('getTrackPoints'));
+        $track = $this->createPartialMock(Track::class, array('trackPoints'));
         $trackPoints = array(
             $this->getTrackPointMock(0, 0, 'now')
         );
         $track
             ->expects(self::exactly(2))
-            ->method('getTrackPoints')
+            ->method('trackPoints')
             ->will(self::returnValue($trackPoints));
 
         /** @var Track $track */
@@ -166,7 +166,7 @@ class TrackTest extends \PHPUnit_Framework_TestCase
         $actual = $track->recomputeLength();
 
         self::assertEquals(0, $actual);
-        self::assertEquals(0, $track->getLength());
+        self::assertEquals(0, $track->length());
     }
 
     /**

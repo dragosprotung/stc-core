@@ -21,7 +21,7 @@ abstract class AbstractSportMapper implements SportMapperInterface
     /**
      * {@inheritdoc}
      */
-    public function getSportFromCode($code) : string
+    public function sportFromCode($code) : string
     {
         $code = strtolower($code);
         $codes = array_flip(static::getMap());
@@ -32,7 +32,7 @@ abstract class AbstractSportMapper implements SportMapperInterface
     /**
      * {@inheritdoc}
      */
-    public function getCodeFromSport($sport) : string
+    public function codeFromSport($sport) : string
     {
         $sport = strtolower($sport);
         $codes = static::getMap();

@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout;
 
-use DateTime;
 use SportTrackerConnector\Core\Date\DateInterval;
 
 /**
@@ -29,14 +28,14 @@ class Track
     /**
      * The start date and time of the track.
      *
-     * @var DateTime
+     * @var \DateTime
      */
     protected $startDateTime;
 
     /**
      * The end date and time of the track.
      *
-     * @var DateTime
+     * @var \DateTime
      */
     protected $endDateTime;
 
@@ -74,7 +73,7 @@ class Track
      *
      * @return string
      */
-    public function getSport() : string
+    public function sport() : string
     {
         return $this->sport;
     }
@@ -104,7 +103,7 @@ class Track
      *
      * @return TrackPoint[]
      */
-    public function getTrackPoints()
+    public function trackPoints()
     {
         return $this->trackPoints;
     }
@@ -115,7 +114,7 @@ class Track
      * @return TrackPoint
      * @throws \OutOfBoundsException If no track points are defined.
      */
-    public function getLastTrackPoint() : TrackPoint
+    public function lastTrackPoint() : TrackPoint
     {
         $lastTrackPoint = end($this->trackPoints);
 
@@ -129,21 +128,11 @@ class Track
     }
 
     /**
-     * Set the start date and time of the track.
-     *
-     * @param DateTime $startDateTime The start date and time.
-     */
-    public function setStartDateTime(DateTime $startDateTime)
-    {
-        $this->startDateTime = $startDateTime;
-    }
-
-    /**
      * Get the start date and time of the track.
      *
-     * @return DateTime
+     * @return \DateTime
      */
-    public function getStartDateTime()
+    public function startDateTime()
     {
         if ($this->startDateTime === null) {
             $this->recomputeStartDateTime();
@@ -155,14 +144,14 @@ class Track
     /**
      * Recompute the start date and time of the track.
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function recomputeStartDateTime()
     {
         $this->startDateTime = null;
-        foreach ($this->getTrackPoints() as $trackPoint) {
-            if ($this->startDateTime === null || $this->startDateTime > $trackPoint->getDateTime()) {
-                $this->startDateTime = clone $trackPoint->getDateTime();
+        foreach ($this->trackPoints() as $trackPoint) {
+            if ($this->startDateTime === null || $this->startDateTime > $trackPoint->dateTime()) {
+                $this->startDateTime = clone $trackPoint->dateTime();
             }
         }
 
@@ -170,21 +159,11 @@ class Track
     }
 
     /**
-     * Set the end date and time of the track.
-     *
-     * @param DateTime $endDateTime The end date and time.
-     */
-    public function setEndDateTime(DateTime $endDateTime)
-    {
-        $this->endDateTime = $endDateTime;
-    }
-
-    /**
      * Get the start date and time of the track.
      *
-     * @return DateTime
+     * @return \DateTime
      */
-    public function getEndDateTime()
+    public function endDateTime()
     {
         if ($this->endDateTime === null) {
             $this->recomputeEndDateTime();
@@ -196,14 +175,14 @@ class Track
     /**
      * Recompute the start date and time of the track.
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function recomputeEndDateTime()
     {
         $this->endDateTime = null;
-        foreach ($this->getTrackPoints() as $trackPoint) {
-            if ($this->startDateTime === null || $this->endDateTime < $trackPoint->getDateTime()) {
-                $this->endDateTime = clone $trackPoint->getDateTime();
+        foreach ($this->trackPoints() as $trackPoint) {
+            if ($this->startDateTime === null || $this->endDateTime < $trackPoint->dateTime()) {
+                $this->endDateTime = clone $trackPoint->dateTime();
             }
         }
 
@@ -215,10 +194,10 @@ class Track
      *
      * @return DateInterval
      */
-    public function getDuration()
+    public function duration()
     {
-        $start = $this->getStartDateTime();
-        $end = $this->getEndDateTime();
+        $start = $this->startDateTime();
+        $end = $this->endDateTime();
 
         $dateDifference = $start->diff($end);
 
@@ -250,7 +229,7 @@ class Track
      *
      * @return float
      */
-    public function getLength()
+    public function length()
     {
         if ($this->length === 0) {
             $this->length = $this->recomputeLength();
@@ -269,7 +248,7 @@ class Track
     {
         $this->length = 0;
 
-        $trackPoints = $this->getTrackPoints();
+        $trackPoints = $this->trackPoints();
         $trackPointsCount = count($trackPoints);
         if ($trackPointsCount < 2) {
             return 0;

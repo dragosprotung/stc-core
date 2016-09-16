@@ -39,7 +39,7 @@ class AbstractDumperTest extends \PHPUnit_Framework_TestCase
         $this->expectExceptionMessage('Could not write to workout.tst');
 
         /** @var AbstractDumper $mock */
-        $mock->dumpToFile($workoutMock, $file);
+        $mock->toFile($workoutMock, $file);
     }
 
     /**
@@ -61,16 +61,16 @@ class AbstractDumperTest extends \PHPUnit_Framework_TestCase
             ->will(self::returnValue(true));
         $mock = $this->getMockBuilder(AbstractDumper::class)
             ->setConstructorArgs(array($filesystemMock))
-            ->setMethods(array('dumpToString'))
+            ->setMethods(array('toString'))
             ->getMockForAbstractClass();
 
         $mock
             ->expects(self::once())
-            ->method('dumpToString')
+            ->method('toString')
             ->with($workoutMock)
             ->will(self::returnValue('dumped content'));
 
         /** @var AbstractDumper $mock */
-        $mock->dumpToFile($workoutMock, $file);
+        $mock->toFile($workoutMock, $file);
     }
 }

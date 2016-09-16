@@ -36,7 +36,7 @@ class GPX extends AbstractLoader
 
             // Sport.
             if (isset($simpleXMLTrack->type)) {
-                $track->setSport(SportGuesser::getSportFromCode((string)$simpleXMLTrack->type));
+                $track->setSport(SportGuesser::sportFromCode((string)$simpleXMLTrack->type));
             }
 
             // Track points.
@@ -65,7 +65,7 @@ class GPX extends AbstractLoader
      * @param SimpleXMLElement $extensions The extensions to parse.
      * @return ExtensionInterface[]
      */
-    private function parseExtensions(SimpleXMLElement $extensions)
+    protected function parseExtensions(SimpleXMLElement $extensions)
     {
         $extensions = $extensions->asXML();
         $return = array();

@@ -21,7 +21,7 @@ abstract class AbstractTracker implements TrackerInterface
     /**
      * {@inheritdoc}
      */
-    public function getSportMapper() : SportMapperInterface
+    public function sportMapper() : SportMapperInterface
     {
         if ($this->sportMapper === null) {
             $this->sportMapper = $this->constructSportMapper();

@@ -54,17 +54,15 @@ class TrackPoint
     protected $extensions = array();
 
     /**
-     * Constructor.
-     *
      * @param float $latitude The latitude.
      * @param float $longitude The longitude.
      * @param \DateTime $dateTime The date and time of the point.
      */
     public function __construct(float $latitude, float $longitude, \DateTime $dateTime)
     {
-        $this->setLatitude($latitude);
-        $this->setLongitude($longitude);
-        $this->setDateTime($dateTime);
+        $this->latitude = $latitude;
+        $this->longitude = $longitude;
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -105,7 +103,7 @@ class TrackPoint
      *
      * @return ExtensionInterface[]
      */
-    public function getExtensions()
+    public function extensions()
     {
         return $this->extensions;
     }
@@ -138,7 +136,7 @@ class TrackPoint
      * @return ExtensionInterface
      * @throws \OutOfBoundsException If the extension is not found.
      */
-    public function getExtension($idExtension)
+    public function extension($idExtension)
     {
         if ($this->hasExtension($idExtension) !== true) {
             throw new \OutOfBoundsException(sprintf('Extension "%s" not found.', $idExtension));
@@ -148,32 +146,13 @@ class TrackPoint
     }
 
     /**
-     * Set the latitude.
-     *
-     * @param float $latitude The latitude.
-     */
-    public function setLatitude(float $latitude)
-    {
-        $this->latitude = $latitude;
-    }
-
-    /**
      * Get the latitude.
      *
      * @return float
      */
-    public function getLatitude() : float
+    public function latitude() : float
     {
         return $this->latitude;
-    }
-
-    /**
-     * Set the longitude.
-     * @param float $longitude The longitude.
-     */
-    public function setLongitude(float $longitude)
-    {
-        $this->longitude = $longitude;
     }
 
     /**
@@ -181,19 +160,9 @@ class TrackPoint
      *
      * @return float
      */
-    public function getLongitude() : float
+    public function longitude() : float
     {
         return $this->longitude;
-    }
-
-    /**
-     * Set the date time of the point.
-     *
-     * @param \DateTime $dateTime The date time of the point.
-     */
-    public function setDateTime(\DateTime $dateTime)
-    {
-        $this->dateTime = $dateTime;
     }
 
     /**
@@ -201,7 +170,7 @@ class TrackPoint
      *
      * @return \DateTime
      */
-    public function getDateTime() : \DateTime
+    public function dateTime() : \DateTime
     {
         return $this->dateTime;
     }
@@ -250,10 +219,10 @@ class TrackPoint
     {
         $earthRadius = 6371000;
 
-        $latFrom = deg2rad($this->getLatitude());
-        $lonFrom = deg2rad($this->getLongitude());
-        $latTo = deg2rad($trackPoint->getLatitude());
-        $lonTo = deg2rad($trackPoint->getLongitude());
+        $latFrom = deg2rad($this->latitude());
+        $lonFrom = deg2rad($this->longitude());
+        $latTo = deg2rad($trackPoint->latitude());
+        $lonTo = deg2rad($trackPoint->longitude());
 
         $latDelta = $latTo - $latFrom;
         $lonDelta = $lonTo - $lonFrom;
@@ -276,8 +245,8 @@ class TrackPoint
      */
     public function speed(TrackPoint $trackPoint)  : float
     {
-        $start = $this->getDateTime();
-        $end = $trackPoint->getDateTime();
+        $start = $this->dateTime();
+        $end = $trackPoint->dateTime();
         $dateDiff = $start->diff($end);
         $secondsDifference = $dateDiff->days * 86400 + $dateDiff->h * 3600 + $dateDiff->i * 60 + $dateDiff->s;
 

@@ -29,9 +29,9 @@ abstract class AbstractDumper implements DumperInterface
     /**
      * {@inheritdoc}
      */
-    public function dumpToFile(Workout $workout, string $outputFile) : bool
+    public function toFile(Workout $workout, string $outputFile) : bool
     {
-        $return = $this->filesystem->put($outputFile, $this->dumpToString($workout));
+        $return = $this->filesystem->put($outputFile, $this->toString($workout));
         if ($return !== true) {
             throw new Exception(sprintf('Could not write to %s', $outputFile));
         }

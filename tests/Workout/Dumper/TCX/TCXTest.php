@@ -21,7 +21,7 @@ class TCXTest extends \PHPUnit_Framework_TestCase
     /**
      * Test dumping a workout to a TCX string.
      */
-    public function testDumpToStringSingleActivity()
+    public function testToStringSingleActivity()
     {
         $workout = new Workout();
         $workout->addTrack(
@@ -36,7 +36,7 @@ class TCXTest extends \PHPUnit_Framework_TestCase
 
         $filesystemMock = $this->createMock(FilesystemInterface::class);
         $tcx = new TCX($filesystemMock);
-        $actual = $tcx->dumpToString($workout);
+        $actual = $tcx->toString($workout);
 
         self::assertXmlStringEqualsXmlFile(__DIR__ . '/Expected/' . $this->getName() . '.tcx', $actual);
     }
@@ -44,7 +44,7 @@ class TCXTest extends \PHPUnit_Framework_TestCase
     /**
      * Test dumping a workout to a TCX string.
      */
-    public function testDumpToStringMultiActivity()
+    public function testToStringMultiActivity()
     {
         $workout = new Workout();
         $workout->addTrack(
@@ -68,7 +68,7 @@ class TCXTest extends \PHPUnit_Framework_TestCase
 
         $filesystemMock = $this->createMock(FilesystemInterface::class);
         $tcx = new TCX($filesystemMock);
-        $actual = $tcx->dumpToString($workout);
+        $actual = $tcx->toString($workout);
 
         self::assertXmlStringEqualsXmlFile(__DIR__ . '/Expected/' . $this->getName() . '.tcx', $actual);
     }

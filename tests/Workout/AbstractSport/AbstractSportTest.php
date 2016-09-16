@@ -30,7 +30,7 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
             );
 
         /** @var AbstractSportMapper $mock */
-        $actual = $mock->getSportFromCode('swim_sport');
+        $actual = $mock->sportFromCode('swim_sport');
         self::assertSame(SportMapperInterface::SWIMMING, $actual);
     }
 
@@ -47,7 +47,7 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
             ->willReturn(array());
 
         /** @var AbstractSportMapper $mock */
-        $actual = $mock->getSportFromCode('unexisting_code');
+        $actual = $mock->sportFromCode('unexisting_code');
         self::assertSame(SportMapperInterface::OTHER, $actual);
     }
 
@@ -64,7 +64,7 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
             ->willReturn(array());
 
         /** @var AbstractSportMapper $mock */
-        $actual = $mock->getCodeFromSport(SportMapperInterface::SWIMMING);
+        $actual = $mock->codeFromSport(SportMapperInterface::SWIMMING);
         self::assertEmpty($actual);
     }
 
@@ -87,7 +87,7 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
             );
 
         /** @var AbstractSportMapper $mock */
-        $actual = $mock->getCodeFromSport(SportMapperInterface::RUNNING);
+        $actual = $mock->codeFromSport(SportMapperInterface::RUNNING);
         self::assertSame('other_sport', $actual);
     }
 
@@ -110,7 +110,7 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
             );
 
         /** @var AbstractSportMapper $mock */
-        $actual = $mock->getCodeFromSport(SportMapperInterface::RUNNING);
+        $actual = $mock->codeFromSport(SportMapperInterface::RUNNING);
         self::assertSame('running_hard', $actual);
     }
 }

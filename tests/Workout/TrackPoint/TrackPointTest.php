@@ -133,6 +133,6 @@ class TrackPointTest extends \PHPUnit_Framework_TestCase
         $this->expectException(\OutOfBoundsException::class);
         $this->expectExceptionMessage('Extension "' . $name . '" not found.');
 
-        $trackPoint->getExtension($name);
+        $trackPoint->extension($name);
     }
 }

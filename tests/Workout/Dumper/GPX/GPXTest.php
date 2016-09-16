@@ -23,7 +23,7 @@ class GPXTest extends \PHPUnit_Framework_TestCase
     /**
      * Test dumping a workout to a GPX string.
      */
-    public function testDumpToStringSingleTrack()
+    public function testToStringSingleTrack()
     {
         $workout = new Workout();
         $workout->addTrack(
@@ -41,7 +41,7 @@ class GPXTest extends \PHPUnit_Framework_TestCase
 
         $filesystemMock = $this->createMock(FilesystemInterface::class);
         $gpx = new GPX($filesystemMock);
-        $actual = $gpx->dumpToString($workout);
+        $actual = $gpx->toString($workout);
 
         self::assertXmlStringEqualsXmlFile(__DIR__ . '/Expected/' . $this->getName() . '.gpx', $actual);
     }
@@ -49,7 +49,7 @@ class GPXTest extends \PHPUnit_Framework_TestCase
     /**
      * Test dumping a workout to a GPX string.
      */
-    public function testDumpToStringMultiTrack()
+    public function testToStringMultiTrack()
     {
         $workout = new Workout();
         $workout->addTrack(
@@ -76,7 +76,7 @@ class GPXTest extends \PHPUnit_Framework_TestCase
 
         $filesystemMock = $this->createMock(FilesystemInterface::class);
         $gpx = new GPX($filesystemMock);
-        $actual = $gpx->dumpToString($workout);
+        $actual = $gpx->toString($workout);
 
         self::assertXmlStringEqualsXmlFile(__DIR__ . '/Expected/' . $this->getName() . '.gpx', $actual);
     }
@@ -84,7 +84,7 @@ class GPXTest extends \PHPUnit_Framework_TestCase
     /**
      * Test dump unknown extensions throws no error.
      */
-    public function testDumpUnknownExtensionsThrowsNoError()
+    public function testUnknownExtensionsThrowsNoError()
     {
         $genericExtensions = new class extends AbstractExtension
         {
@@ -118,7 +118,7 @@ class GPXTest extends \PHPUnit_Framework_TestCase
 
         $filesystemMock = $this->createMock(FilesystemInterface::class);
         $gpx = new GPX($filesystemMock);
-        $actual = $gpx->dumpToString($workout);
+        $actual = $gpx->toString($workout);
 
         self::assertXmlStringEqualsXmlFile(__DIR__ . '/Expected/' . $this->getName() . '.gpx', $actual);
     }

@@ -51,6 +51,6 @@ class DateTimeZoneTest extends \PHPUnit_Framework_TestCase
     public function testGetUTCTimeZoneOffset($originTimeZone, $expected)
     {
         /** @var AbstractTracker $mock */
-        self::assertEquals($expected, $originTimeZone->getUTCTimeZoneOffset());
+        self::assertEquals($expected, $originTimeZone->UTCTimeZoneOffset());
     }
 }

@@ -47,7 +47,7 @@ interface SportMapperInterface
      * @param mixed $code The code from the tracker.
      * @return string
      */
-    public function getSportFromCode($code) : string;
+    public function sportFromCode($code) : string;
 
     /**
      * Get the tracker code for a sport from a SportMapperInterface code.
@@ -55,5 +55,5 @@ interface SportMapperInterface
      * @param string $sport The sport (one of the SportMapperInterface constants)
      * @return mixed
      */
-    public function getCodeFromSport($sport) : string;
+    public function codeFromSport($sport) : string;
 }
