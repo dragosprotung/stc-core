@@ -6,6 +6,7 @@ namespace SportTrackerConnector\Core\Workout\Loader;
 
 use League\Flysystem\FilesystemInterface;
 use League\Flysystem\UnreadableFileException;
+use SportTrackerConnector\Core\Workout\Workout;
 
 /**
  * Abstract loader.
@@ -28,7 +29,7 @@ abstract class AbstractLoader implements LoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function fromFile($file)
+    public function fromFile($file) : Workout
     {
         $content = $this->filesystem->read($file);
         if ($content === false) {

@@ -18,7 +18,7 @@ interface LoaderInterface
      * @param string $string The data.
      * @return Workout
      */
-    public function fromString($string);
+    public function fromString($string) : Workout;
 
     /**
      * Get a workout from a file.
@@ -28,5 +28,5 @@ interface LoaderInterface
      *
      * @throws UnreadableFileException
      */
-    public function fromFile($file);
+    public function fromFile($file) : Workout;
 }

@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout\Dumper;
 
-use DateTime;
-use DateTimeZone;
 use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
 use SportTrackerConnector\Core\Workout\TrackPoint;
 use SportTrackerConnector\Core\Workout\Workout;
@@ -44,13 +42,13 @@ class JSON extends AbstractDumper
         $points = array();
         foreach ($trackPoints as $trackPoint) {
             $dateTime = clone $trackPoint->dateTime();
-            $dateTime->setTimezone(new DateTimeZone('UTC'));
+            $dateTime->setTimezone(new \DateTimeZone('UTC'));
             $point = array(
-                'time' => $dateTime->format(DateTime::W3C),
+                'time' => $dateTime->format(\DateTime::W3C),
                 'latitude' => $trackPoint->latitude(),
                 'longitude' => $trackPoint->longitude(),
-                'elevation' => $trackPoint->getElevation(),
-                'distance' => $trackPoint->getDistance(),
+                'elevation' => $trackPoint->elevation(),
+                'distance' => $trackPoint->distance(),
                 'extensions' => $this->writeExtensions($trackPoint->extensions())
             );
 

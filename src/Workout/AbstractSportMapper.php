@@ -16,7 +16,7 @@ abstract class AbstractSportMapper implements SportMapperInterface
      *
      * @return array
      */
-    abstract protected function getMap();
+    abstract protected function getMap() : array;
 
     /**
      * {@inheritdoc}
@@ -43,6 +43,6 @@ abstract class AbstractSportMapper implements SportMapperInterface
             return $codes[self::OTHER];
         }
 
-        return '';
+        throw new \RuntimeException('Sport not mapped.');
     }
 }

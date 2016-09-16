@@ -52,9 +52,9 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test get code from sport returns NULL if sport is not associated.
+     * Test get code from sport throws exception if sport is not mapped
      */
-    public function testGetCodeFromSportReturnsNULLIfSportIsNotAssociated()
+    public function testGetCodeFromSportThrowsExceptionIfSportIsNotMapped()
     {
         $mock = $this->getMockBuilder(AbstractSportMapper::class)
             ->setMethods(array('getMap'))
@@ -63,9 +63,11 @@ class AbstractSportTest extends \PHPUnit_Framework_TestCase
             ->method('getMap')
             ->willReturn(array());
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Sport not mapped.');
+
         /** @var AbstractSportMapper $mock */
-        $actual = $mock->codeFromSport(SportMapperInterface::SWIMMING);
-        self::assertEmpty($actual);
+        $mock->codeFromSport(SportMapperInterface::SWIMMING);
     }
 
     /**

@@ -4,15 +4,11 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout\Dumper;
 
-use DateTime;
-use DateTimeZone;
-use InvalidArgumentException;
 use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
 use SportTrackerConnector\Core\Workout\Extension\HR;
 use SportTrackerConnector\Core\Workout\Track;
 use SportTrackerConnector\Core\Workout\TrackPoint;
 use SportTrackerConnector\Core\Workout\Workout;
-use XMLWriter;
 
 /**
  * Dump a workout to TCX format.
@@ -24,7 +20,7 @@ class TCX extends AbstractDumper
      */
     public function toString(Workout $workout) : string
     {
-        $xmlWriter = new XMLWriter();
+        $xmlWriter = new \XMLWriter();
         $xmlWriter->openMemory();
         $xmlWriter->setIndent(true);
         $xmlWriter->startDocument('1.0', 'UTF-8');
@@ -50,10 +46,10 @@ class TCX extends AbstractDumper
     /**
      * Write the tracks to the TCX.
      *
-     * @param XMLWriter $xmlWriter The XML writer.
+     * @param \XMLWriter $xmlWriter The XML writer.
      * @param Workout $workout The workout.
      */
-    private function writeTracks(XMLWriter $xmlWriter, Workout $workout)
+    private function writeTracks(\XMLWriter $xmlWriter, Workout $workout)
     {
         $xmlWriter->startElement('Activities');
         foreach ($workout->tracks() as $track) {
@@ -84,17 +80,17 @@ class TCX extends AbstractDumper
     /**
      * Write the track points to the TCX.
      *
-     * @param XMLWriter $xmlWriter The XML writer.
+     * @param \XMLWriter $xmlWriter The XML writer.
      * @param TrackPoint[] $trackPoints The track points to write.
      */
-    private function writeTrackPoints(XMLWriter $xmlWriter, array $trackPoints)
+    private function writeTrackPoints(\XMLWriter $xmlWriter, array $trackPoints)
     {
         foreach ($trackPoints as $trackPoint) {
             $xmlWriter->startElement('Trackpoint');
 
             // Time of position
             $dateTime = clone $trackPoint->dateTime();
-            $dateTime->setTimezone(new DateTimeZone('UTC'));
+            $dateTime->setTimezone(new \DateTimeZone('UTC'));
             $xmlWriter->writeElement('Time', $this->formatDateTime($dateTime));
 
             // Position.
@@ -104,11 +100,11 @@ class TCX extends AbstractDumper
             $xmlWriter->endElement();
 
             // Elevation.
-            $xmlWriter->writeElement('AltitudeMeters', (string)$trackPoint->getElevation());
+            $xmlWriter->writeElement('AltitudeMeters', (string)$trackPoint->elevation());
 
             // Distance.
             if ($trackPoint->hasDistance() === true) {
-                $xmlWriter->writeElement('DistanceMeters', (string)$trackPoint->getDistance());
+                $xmlWriter->writeElement('DistanceMeters', (string)$trackPoint->distance());
             }
 
             // Extensions.
@@ -121,10 +117,10 @@ class TCX extends AbstractDumper
     /**
      * Write the heart rate data for a lap.
      *
-     * @param XMLWriter $xmlWriter The XML writer.
+     * @param \XMLWriter $xmlWriter The XML writer.
      * @param Track $track The track to write.
      */
-    protected function writeLapHeartRateDate(XMLWriter $xmlWriter, Track $track)
+    protected function writeLapHeartRateDate(\XMLWriter $xmlWriter, Track $track)
     {
         $averageHeartRate = array();
         $maxHearRate = null;
@@ -156,11 +152,10 @@ class TCX extends AbstractDumper
     /**
      * Write the extensions into the TCX.
      *
-     * @param XMLWriter $xmlWriter The XMLWriter.
+     * @param \XMLWriter $xmlWriter The XMLWriter.
      * @param ExtensionInterface[] $extensions The extensions to write.
-     * @throws InvalidArgumentException If an extension is not known.
      */
-    protected function writeExtensions(XMLWriter $xmlWriter, array $extensions)
+    protected function writeExtensions(\XMLWriter $xmlWriter, array $extensions)
     {
         foreach ($extensions as $extension) {
             switch ($extension::ID()) {
@@ -176,10 +171,10 @@ class TCX extends AbstractDumper
     /**
      * Format a DateTime object for TCX format.
      *
-     * @param DateTime $dateTime The date time to format.
+     * @param \DateTime $dateTime The date time to format.
      * @return string
      */
-    protected function formatDateTime(DateTime $dateTime)
+    protected function formatDateTime(\DateTime $dateTime) : string
     {
         return $dateTime->format('Y-m-d\TH:i:s\Z');
     }

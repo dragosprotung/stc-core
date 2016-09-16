@@ -4,14 +4,10 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout\Dumper;
 
-use DateTime;
-use DateTimeZone;
-use InvalidArgumentException;
 use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
 use SportTrackerConnector\Core\Workout\Extension\HR;
 use SportTrackerConnector\Core\Workout\TrackPoint;
 use SportTrackerConnector\Core\Workout\Workout;
-use XMLWriter;
 
 /**
  * Dump a workout to GPX format.
@@ -23,7 +19,7 @@ class GPX extends AbstractDumper
      */
     public function toString(Workout $workout) : string
     {
-        $xmlWriter = new XMLWriter();
+        $xmlWriter = new \XMLWriter();
         $xmlWriter->openMemory();
         $xmlWriter->setIndent(true);
         $xmlWriter->startDocument('1.0', 'UTF-8');
@@ -59,10 +55,10 @@ class GPX extends AbstractDumper
     /**
      * Write the tracks to the GPX.
      *
-     * @param XMLWriter $xmlWriter The XML writer.
+     * @param \XMLWriter $xmlWriter The XML writer.
      * @param Workout $workout The workout.
      */
-    private function writeTracks(XMLWriter $xmlWriter, Workout $workout)
+    private function writeTracks(\XMLWriter $xmlWriter, Workout $workout)
     {
         foreach ($workout->tracks() as $track) {
             $xmlWriter->startElement('trk');
@@ -77,10 +73,10 @@ class GPX extends AbstractDumper
     /**
      * Write the track points to the GPX.
      *
-     * @param XMLWriter $xmlWriter The XML writer.
+     * @param \XMLWriter $xmlWriter The XML writer.
      * @param TrackPoint[] $trackPoints The track points to write.
      */
-    private function writeTrackPoints(XMLWriter $xmlWriter, array $trackPoints)
+    private function writeTrackPoints(\XMLWriter $xmlWriter, array $trackPoints)
     {
         foreach ($trackPoints as $trackPoint) {
             $xmlWriter->startElement('trkpt');
@@ -90,12 +86,12 @@ class GPX extends AbstractDumper
             $xmlWriter->writeAttribute('lon', (string)$trackPoint->longitude());
 
             // Elevation.
-            $xmlWriter->writeElement('ele', (string)$trackPoint->getElevation());
+            $xmlWriter->writeElement('ele', (string)$trackPoint->elevation());
 
             // Time of position
             $dateTime = clone $trackPoint->dateTime();
-            $dateTime->setTimezone(new DateTimeZone('UTC'));
-            $xmlWriter->writeElement('time', $dateTime->format(DateTime::W3C));
+            $dateTime->setTimezone(new \DateTimeZone('UTC'));
+            $xmlWriter->writeElement('time', $dateTime->format(\DateTime::W3C));
 
             // Extensions.
             $this->writeExtensions($xmlWriter, $trackPoint->extensions());
@@ -107,11 +103,10 @@ class GPX extends AbstractDumper
     /**
      * Write the extensions into the GPX.
      *
-     * @param XMLWriter $xmlWriter The XMLWriter.
+     * @param \XMLWriter $xmlWriter The XMLWriter.
      * @param ExtensionInterface[] $extensions The extensions to write.
-     * @throws InvalidArgumentException If an extension is not known.
      */
-    protected function writeExtensions(XMLWriter $xmlWriter, array $extensions)
+    protected function writeExtensions(\XMLWriter $xmlWriter, array $extensions)
     {
         $xmlWriter->startElement('extensions');
         foreach ($extensions as $extension) {
@@ -129,10 +124,10 @@ class GPX extends AbstractDumper
     /**
      * Write the metadata in the GPX.
      *
-     * @param XMLWriter $xmlWriter The XML writer.
+     * @param \XMLWriter $xmlWriter The XML writer.
      * @param Workout $workout The workout.
      */
-    protected function writeMetaData(XMLWriter $xmlWriter, Workout $workout)
+    protected function writeMetaData(\XMLWriter $xmlWriter, Workout $workout)
     {
         $xmlWriter->startElement('metadata');
         if ($workout->author() !== null) {

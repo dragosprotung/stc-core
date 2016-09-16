@@ -80,7 +80,7 @@ class TrackPoint
      *
      * @return float
      */
-    public function getElevation() : float
+    public function elevation() : float
     {
         return $this->elevation;
     }
@@ -180,7 +180,7 @@ class TrackPoint
      *
      * @param float $distance The distance from start to this point.
      */
-    public function setDistance($distance)
+    public function setDistance($distance = null)
     {
         if ($distance !== null) {
             $distance = (float)$distance;
@@ -204,7 +204,7 @@ class TrackPoint
      *
      * @return float
      */
-    public function getDistance()
+    public function distance()
     {
         return $this->distance;
     }
@@ -215,7 +215,7 @@ class TrackPoint
      * @param TrackPoint $trackPoint The other point.
      * @return float The distance in meters.
      */
-    public function distance(TrackPoint $trackPoint)  : float
+    public function distanceFromPoint(TrackPoint $trackPoint)  : float
     {
         $earthRadius = 6371000;
 
@@ -255,9 +255,9 @@ class TrackPoint
         }
 
         if ($this->hasDistance() === true && $trackPoint->hasDistance()) {
-            $distance = abs($this->getDistance() - $trackPoint->getDistance());
+            $distance = abs($this->distance() - $trackPoint->distance());
         } else {
-            $distance = $this->distance($trackPoint);
+            $distance = $this->distanceFromPoint($trackPoint);
         }
 
         return ($distance / $secondsDifference) * 3.6;

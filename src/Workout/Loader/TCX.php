@@ -4,11 +4,10 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout\Loader;
 
-use DateTime;
-use SimpleXMLElement;
 use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
 use SportTrackerConnector\Core\Workout\Extension\HR;
 use SportTrackerConnector\Core\Workout\SportGuesser;
+use SportTrackerConnector\Core\Workout\SportMapperInterface;
 use SportTrackerConnector\Core\Workout\Track;
 use SportTrackerConnector\Core\Workout\TrackPoint;
 use SportTrackerConnector\Core\Workout\Workout;
@@ -21,25 +20,26 @@ class TCX extends AbstractLoader
     /**
      * {@inheritdoc}
      */
-    public function fromString($string)
+    public function fromString($string) : Workout
     {
-        $simpleXML = new SimpleXMLElement($string);
+        $simpleXML = new \SimpleXMLElement($string);
         $workout = new Workout();
 
         foreach ($simpleXML->Activities[0] as $simpleXMLActivity) {
-            $workoutTrack = new Track();
-
             // Sport.
             $attributes = $simpleXMLActivity->attributes();
+            $sport = SportMapperInterface::class;
             if (isset($attributes['Sport'])) {
-                $workoutTrack->setSport(SportGuesser::sportFromCode((string)$attributes['Sport']));
+                $sport = SportGuesser::sportFromCode((string)$attributes['Sport']);
             }
+
+            $workoutTrack = new Track(array(), $sport);
 
             // Track points.
             foreach ($simpleXMLActivity->Lap as $lap) {
                 foreach ($lap->Track as $track) {
                     foreach ($track->Trackpoint as $trackPoint) {
-                        $dateTime = new DateTime((string)$trackPoint->Time);
+                        $dateTime = new \DateTime((string)$trackPoint->Time);
                         $latitude = (float)$trackPoint->Position->LatitudeDegrees;
                         $longitude = (float)$trackPoint->Position->LongitudeDegrees;
 
@@ -67,10 +67,10 @@ class TCX extends AbstractLoader
     /**
      * Parse and return an array of extensions from the XML.
      *
-     * @param SimpleXMLElement $trackPoint The track point from the TCX to parse.
+     * @param \SimpleXMLElement $trackPoint The track point from the TCX to parse.
      * @return ExtensionInterface[]
      */
-    protected function parseExtensions(SimpleXMLElement $trackPoint)
+    protected function parseExtensions(\SimpleXMLElement $trackPoint) : array
     {
         $return = array();
 

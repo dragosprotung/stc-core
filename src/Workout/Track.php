@@ -54,17 +54,7 @@ class Track
      */
     public function __construct(array $trackPoints = array(), string $sport = SportMapperInterface::OTHER)
     {
-        $this->setTrackPoints($trackPoints);
-        $this->setSport($sport);
-    }
-
-    /**
-     * Set the sport for this workout.
-     *
-     * @param string $sport The sport.
-     */
-    public function setSport(string $sport)
-    {
+        $this->trackPoints = $trackPoints;
         $this->sport = $sport;
     }
 
@@ -86,16 +76,6 @@ class Track
     public function addTrackPoint(TrackPoint $trackPoint)
     {
         $this->trackPoints[] = $trackPoint;
-    }
-
-    /**
-     * Set the track points.
-     *
-     * @param TrackPoint[] $trackPoints The track points to set.
-     */
-    public function setTrackPoints(array $trackPoints)
-    {
-        $this->trackPoints = $trackPoints;
     }
 
     /**
@@ -258,7 +238,7 @@ class Track
             $previousTrack = $trackPoints[$i - 1];
             $currentTrack = $trackPoints[$i];
 
-            $this->length += $currentTrack->distance($previousTrack);
+            $this->length += $currentTrack->distanceFromPoint($previousTrack);
         }
 
         $this->length = round($this->length, 6);

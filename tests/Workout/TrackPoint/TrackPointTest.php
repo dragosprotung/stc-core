@@ -39,7 +39,7 @@ class TrackPointTest extends \PHPUnit_Framework_TestCase
     {
         $starPoint = new TrackPoint(-38.691450, 176.079795, new \DateTime());
 
-        $actual = $starPoint->distance($destination);
+        $actual = $starPoint->distanceFromPoint($destination);
         self::assertEquals($expected, $actual, '', $delta);
     }
 
