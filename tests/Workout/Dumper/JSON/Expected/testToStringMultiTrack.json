@@ -4,8 +4,8 @@
       "points": [
         {
           "time": "2014-05-30T17:12:58+00:00",
-          "latitude": "53.551075",
-          "longitude": "9.993672",
+          "latitude": 53.551075,
+          "longitude": 9.993672,
           "elevation": 11,
           "distance": 0,
           "extensions": {
@@ -14,10 +14,10 @@
         },
         {
           "time": "2014-05-30T17:12:59+00:00",
-          "latitude": "53.550085",
-          "longitude": "9.992682",
+          "latitude": 53.550085,
+          "longitude": 9.992682,
           "elevation": 10,
-          "distance": 10,
+          "distance": 128.04548713833256,
           "extensions": {
             "HR": 88
           }
@@ -30,20 +30,20 @@
       "points": [
         {
           "time": "2014-05-30T17:13:00+00:00",
-          "latitude": "53.549075",
-          "longitude": "9.991672",
+          "latitude": 53.549075,
+          "longitude": 9.991672,
           "elevation": 9,
-          "distance": null,
+          "distance": 0,
           "extensions": {
             "HR": 98
           }
         },
         {
           "time": "2014-05-30T17:13:01+00:00",
-          "latitude": "53.548085",
-          "longitude": "9.990682",
+          "latitude": 53.548085,
+          "longitude": 9.990682,
           "elevation": 8,
-          "distance": null,
+          "distance": 128.0470659011111,
           "extensions": {
             "HR": 108
           }

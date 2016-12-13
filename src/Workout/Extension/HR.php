@@ -4,27 +4,54 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout\Extension;
 
+use Assert\Assertion;
+
 /**
  * Heart rate track point extension.
  */
-class HR extends AbstractExtension
+final class HR implements ExtensionInterface
 {
     /**
-     * {@inheritdoc}
+     * Value of the heart rate.
+     *
+     * @var int
      */
-    protected function setValue($value)
-    {
-        if ($value !== null && (!is_int($value) || $value < 0 || $value > 230)) {
-            throw new \InvalidArgumentException('The value for the HR must be an integer and between 0 and 230.');
-        }
+    private $value;
 
-        parent::setValue($value);
+    /**
+     * @param int $value
+     */
+    private function __construct(?int $value)
+    {
+        Assertion::greaterOrEqualThan($value, 40);
+        Assertion::lessOrEqualThan($value, 210);
+
+        $this->value = $value;
+    }
+
+    /**
+     * @param mixed $value
+     * @return HR
+     */
+    public static function fromValue($value): HR
+    {
+        Assertion::integerish($value);
+
+        return new self((int)$value);
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function ID() : string
+    public function value()
+    {
+        return $this->value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function ID(): string
     {
         return 'HR';
     }
@@ -32,7 +59,7 @@ class HR extends AbstractExtension
     /**
      * {@inheritdoc}
      */
-    public function name() : string
+    public function name(): string
     {
         return 'Heart rate';
     }

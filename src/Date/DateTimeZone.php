@@ -7,7 +7,7 @@ namespace SportTrackerConnector\Core\Date;
 /**
  * DateTimeZone helper class.
  */
-class DateTimeZone extends \DateTimeZone
+final class DateTimeZone extends \DateTimeZone
 {
     /**
      * Get offset between a time zone and UTC time zone in seconds.

@@ -15,53 +15,49 @@ use SportTrackerConnector\Core\Workout\Workout;
 /**
  * Load a workout from TCX format.
  */
-class TCX extends AbstractLoader
+class TCX implements LoaderInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function fromString($string) : Workout
+    public function load(string $filePath): Workout
     {
-        $simpleXML = new \SimpleXMLElement($string);
-        $workout = new Workout();
+        $simpleXML = new \SimpleXMLElement($filePath);
 
+        $tracks = [];
         foreach ($simpleXML->Activities[0] as $simpleXMLActivity) {
             // Sport.
             $attributes = $simpleXMLActivity->attributes();
             $sport = SportMapperInterface::class;
             if (isset($attributes['Sport'])) {
-                $sport = SportGuesser::sportFromCode((string)$attributes['Sport']);
+                $sport = SportGuesser::guess((string)$attributes['Sport']);
             }
 
-            $workoutTrack = new Track(array(), $sport);
 
             // Track points.
+            $trackPoints = [];
             foreach ($simpleXMLActivity->Lap as $lap) {
                 foreach ($lap->Track as $track) {
                     foreach ($track->Trackpoint as $trackPoint) {
-                        $dateTime = new \DateTime((string)$trackPoint->Time);
+                        $dateTime = new \DateTimeImmutable((string)$trackPoint->Time);
                         $latitude = (float)$trackPoint->Position->LatitudeDegrees;
                         $longitude = (float)$trackPoint->Position->LongitudeDegrees;
 
-                        $workoutTrackPoint = new TrackPoint($latitude, $longitude, $dateTime);
-                        $workoutTrackPoint->setElevation(round((float)$trackPoint->AltitudeMeters, 2));
-
-                        if ($trackPoint->DistanceMeters) {
-                            $workoutTrackPoint->setDistance($trackPoint->DistanceMeters);
-                        }
-
-                        $extensions = $this->parseExtensions($trackPoint);
-                        $workoutTrackPoint->setExtensions($extensions);
-
-                        $workoutTrack->addTrackPoint($workoutTrackPoint);
+                        $trackPoints[] = TrackPoint::with(
+                            $latitude,
+                            $longitude,
+                            $dateTime,
+                            round((float)$trackPoint->AltitudeMeters, 2),
+                            $this->parseExtensions($trackPoint)
+                        );
                     }
                 }
+                $tracks[] = new Track($trackPoints, $sport);
             }
 
-            $workout->addTrack($workoutTrack);
         }
 
-        return $workout;
+        return new Workout($tracks);
     }
 
     /**
@@ -70,12 +66,12 @@ class TCX extends AbstractLoader
      * @param \SimpleXMLElement $trackPoint The track point from the TCX to parse.
      * @return ExtensionInterface[]
      */
-    protected function parseExtensions(\SimpleXMLElement $trackPoint) : array
+    protected function parseExtensions(\SimpleXMLElement $trackPoint): array
     {
         $return = array();
 
         if ($trackPoint->HeartRateBpm) {
-            $return[] = new HR((int)$trackPoint->HeartRateBpm->Value);
+            $return[] = HR::fromValue((string)$trackPoint->HeartRateBpm->Value);
         }
 
         return $return;

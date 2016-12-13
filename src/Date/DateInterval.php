@@ -7,7 +7,7 @@ namespace SportTrackerConnector\Core\Date;
 /**
  * DateInterval helper class.
  */
-class DateInterval extends \DateInterval
+final class DateInterval extends \DateInterval
 {
     /**
      * Get the total number of seconds from the DateInterval.

@@ -11,12 +11,12 @@ use SportTrackerConnector\Core\Workout\Workout;
 /**
  * Dump a workout to JSON.
  */
-class JSON extends AbstractDumper
+class JSON implements DumperInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function toString(Workout $workout) : string
+    public function dump(Workout $workout): string
     {
         $data = array();
         $tracks = $workout->tracks();
@@ -40,17 +40,25 @@ class JSON extends AbstractDumper
     private function writeTrackPoints(array $trackPoints)
     {
         $points = array();
+        $previousPoint = null;
         foreach ($trackPoints as $trackPoint) {
             $dateTime = clone $trackPoint->dateTime();
             $dateTime->setTimezone(new \DateTimeZone('UTC'));
+
+            $distance = 0;
+            if ($previousPoint !== null) {
+                $distance = $trackPoint->distanceFromPoint($previousPoint);
+            }
+
             $point = array(
                 'time' => $dateTime->format(\DateTime::W3C),
                 'latitude' => $trackPoint->latitude(),
                 'longitude' => $trackPoint->longitude(),
                 'elevation' => $trackPoint->elevation(),
-                'distance' => $trackPoint->distance(),
+                'distance' => $distance,
                 'extensions' => $this->writeExtensions($trackPoint->extensions())
             );
+            $previousPoint = $trackPoint;
 
             $points[] = $point;
         }

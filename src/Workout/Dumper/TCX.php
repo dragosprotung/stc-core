@@ -13,12 +13,12 @@ use SportTrackerConnector\Core\Workout\Workout;
 /**
  * Dump a workout to TCX format.
  */
-class TCX extends AbstractDumper
+class TCX implements DumperInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function toString(Workout $workout) : string
+    public function dump(Workout $workout): string
     {
         $xmlWriter = new \XMLWriter();
         $xmlWriter->openMemory();
@@ -26,14 +26,14 @@ class TCX extends AbstractDumper
         $xmlWriter->startDocument('1.0', 'UTF-8');
         $xmlWriter->startElement('TrainingCenterDatabase');
 
-        $xmlWriter->writeAttributeNs(
+        $xmlWriter->writeAttributeNS(
             'xsi',
             'schemaLocation',
             null,
             'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd'
         );
         $xmlWriter->writeAttribute('xmlns', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2');
-        $xmlWriter->writeAttributeNs('xmlns', 'xsi', null, 'http://www.w3.org/2001/XMLSchema-instance');
+        $xmlWriter->writeAttributeNS('xmlns', 'xsi', null, 'http://www.w3.org/2001/XMLSchema-instance');
 
         $this->writeTracks($xmlWriter, $workout);
 
@@ -85,6 +85,7 @@ class TCX extends AbstractDumper
      */
     private function writeTrackPoints(\XMLWriter $xmlWriter, array $trackPoints)
     {
+        $previousTrackPoint = null;
         foreach ($trackPoints as $trackPoint) {
             $xmlWriter->startElement('Trackpoint');
 
@@ -103,14 +104,18 @@ class TCX extends AbstractDumper
             $xmlWriter->writeElement('AltitudeMeters', (string)$trackPoint->elevation());
 
             // Distance.
-            if ($trackPoint->hasDistance() === true) {
-                $xmlWriter->writeElement('DistanceMeters', (string)$trackPoint->distance());
+            if ($previousTrackPoint !== null) {
+                $xmlWriter->writeElement('DistanceMeters', (string)$trackPoint->distanceFromPoint($previousTrackPoint));
+            } else {
+                $xmlWriter->writeElement('DistanceMeters', '0');
             }
 
             // Extensions.
             $this->writeExtensions($xmlWriter, $trackPoint->extensions());
 
             $xmlWriter->endElement();
+
+            $previousTrackPoint = $trackPoint;
         }
     }
 
@@ -135,7 +140,7 @@ class TCX extends AbstractDumper
 
         if ($averageHeartRate !== array()) {
             $xmlWriter->startElement('AverageHeartRateBpm');
-            $xmlWriter->writeAttributeNs('xsi', 'type', null, 'HeartRateInBeatsPerMinute_t');
+            $xmlWriter->writeAttributeNS('xsi', 'type', null, 'HeartRateInBeatsPerMinute_t');
             $hearRateValue = array_sum($averageHeartRate) / count($averageHeartRate);
             $xmlWriter->writeElement('Value', (string)$hearRateValue);
             $xmlWriter->endElement();
@@ -143,7 +148,7 @@ class TCX extends AbstractDumper
 
         if ($maxHearRate !== null) {
             $xmlWriter->startElement('MaximumHeartRateBpm');
-            $xmlWriter->writeAttributeNs('xsi', 'type', null, 'HeartRateInBeatsPerMinute_t');
+            $xmlWriter->writeAttributeNS('xsi', 'type', null, 'HeartRateInBeatsPerMinute_t');
             $xmlWriter->writeElement('Value', (string)$maxHearRate);
             $xmlWriter->endElement();
         }
@@ -171,10 +176,10 @@ class TCX extends AbstractDumper
     /**
      * Format a DateTime object for TCX format.
      *
-     * @param \DateTime $dateTime The date time to format.
+     * @param \DateTimeImmutable $dateTime The date time to format.
      * @return string
      */
-    protected function formatDateTime(\DateTime $dateTime) : string
+    protected function formatDateTime(\DateTimeImmutable $dateTime): string
     {
         return $dateTime->format('Y-m-d\TH:i:s\Z');
     }

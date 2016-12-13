@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace SportTrackerConnector\Core\Tests\Date\DateTimeZone;
 
 use SportTrackerConnector\Core\Date\DateTimeZone;
-use SportTrackerConnector\Core\Tracker\AbstractTracker;
 
 /**
  * Test for DateTimeZone.
@@ -17,25 +16,24 @@ class DateTimeZoneTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function dataProviderGetUTCTimeZoneOffset()
+    public static function dataProviderGetUTCTimeZoneOffset(): array
     {
-        $data = array();
-        $data[] = array(new DateTimeZone('UTC'), 0);
-        $data[] = array(new DateTimeZone('Europe/Berlin'), $this->isDST('Europe/Berlin') ? -7200 : -3600);
-        $data[] = array(new DateTimeZone('Europe/Bucharest'), $this->isDST('Europe/Bucharest') ? -10800 : -7200);
-        $data[] = array(new DateTimeZone('America/Los_Angeles'), $this->isDST('America/Los_Angeles') ? 25200 : 28800);
-        $data[] = array(new DateTimeZone('Pacific/Auckland'), $this->isDST('Pacific/Auckland') ? -46800 : -43200);
-
-        return $data;
+        return [
+            [new DateTimeZone('UTC'), 0],
+            [new DateTimeZone('Europe/Berlin'), self::isDST('Europe/Berlin') ? -7200 : -3600],
+            [new DateTimeZone('Europe/Bucharest'), self::isDST('Europe/Bucharest') ? -10800 : -7200],
+            [new DateTimeZone('America/Los_Angeles'), self::isDST('America/Los_Angeles') ? 25200 : 28800],
+            [new DateTimeZone('Pacific/Auckland'), self::isDST('Pacific/Auckland') ? -46800 : -43200]
+        ];
     }
 
     /**
      * Check if a timezone is in daylight saving time.
      *
      * @param string $timezone The timezone to check.
-     * @return boolean
+     * @return bool
      */
-    private function isDST($timezone)
+    private static function isDST(string $timezone): bool
     {
         $date = new \DateTime('now', new \DateTimeZone($timezone));
         return (boolean)$date->format('I');
@@ -50,7 +48,6 @@ class DateTimeZoneTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetUTCTimeZoneOffset($originTimeZone, $expected)
     {
-        /** @var AbstractTracker $mock */
         self::assertEquals($expected, $originTimeZone->UTCTimeZoneOffset());
     }
 }

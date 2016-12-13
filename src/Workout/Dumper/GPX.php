@@ -12,12 +12,12 @@ use SportTrackerConnector\Core\Workout\Workout;
 /**
  * Dump a workout to GPX format.
  */
-class GPX extends AbstractDumper
+final class GPX implements DumperInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function toString(Workout $workout) : string
+    public function dump(Workout $workout): string
     {
         $xmlWriter = new \XMLWriter();
         $xmlWriter->openMemory();

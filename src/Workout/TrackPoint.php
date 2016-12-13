@@ -4,108 +4,71 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout;
 
+use Assert\Assertion;
 use SportTrackerConnector\Core\Workout\Extension\ExtensionInterface;
 
 /**
  * A point in a track.
  */
-class TrackPoint
+final class TrackPoint
 {
     /**
      * Latitude of the point.
      *
      * @var float
      */
-    protected $latitude;
+    private $latitude;
 
     /**
      * Longitude of the point.
      *
      * @var float
      */
-    protected $longitude;
-
-    /**
-     * The distance in meters from start to this point.
-     *
-     * @var float
-     */
-    protected $distance;
+    private $longitude;
 
     /**
      * Elevation of the point.
      *
      * @var float
      */
-    protected $elevation;
+    private $elevation;
 
     /**
      * The time for the point.
      *
-     * @var \DateTime
+     * @var \DateTimeImmutable
      */
-    protected $dateTime;
+    private $dateTime;
 
     /**
      * Array of extensions.
      *
      * @var ExtensionInterface[]
      */
-    protected $extensions = array();
+    private $extensions = array();
 
     /**
      * @param float $latitude The latitude.
      * @param float $longitude The longitude.
-     * @param \DateTime $dateTime The date and time of the point.
+     * @param \DateTimeImmutable $dateTime The date and time of the point.
+     * @param float|null $elevation
+     * @param array $extensions
      */
-    public function __construct(float $latitude, float $longitude, \DateTime $dateTime)
-    {
+    private function __construct(
+        ?float $latitude,
+        ?float $longitude,
+        \DateTimeImmutable $dateTime,
+        ?float $elevation,
+        array $extensions = []
+    ) {
         $this->latitude = $latitude;
         $this->longitude = $longitude;
         $this->dateTime = $dateTime;
-    }
-
-    /**
-     * Set the elevation.
-     *
-     * @param float $elevation The elevation.
-     */
-    public function setElevation(float $elevation)
-    {
         $this->elevation = $elevation;
-    }
 
-    /**
-     * Get the elevation.
-     *
-     * @return float
-     */
-    public function elevation() : float
-    {
-        return $this->elevation;
-    }
-
-    /**
-     * Set the extensions.
-     *
-     * @param ExtensionInterface[] $extensions The extensions to set.
-     */
-    public function setExtensions(array $extensions)
-    {
-        $this->extensions = array();
         foreach ($extensions as $extension) {
             $this->addExtension($extension);
         }
-    }
-
-    /**
-     * Get the extensions.
-     *
-     * @return ExtensionInterface[]
-     */
-    public function extensions()
-    {
-        return $this->extensions;
     }
 
     /**
@@ -113,10 +76,55 @@ class TrackPoint
      *
      * @param ExtensionInterface $extension The extension to add.
      */
-    public function addExtension(ExtensionInterface $extension)
+    private function addExtension(ExtensionInterface $extension)
     {
         $this->extensions[$extension::ID()] = $extension;
     }
+
+    /**
+     * @param float|null $latitude
+     * @param float|null $longitude
+     * @param \DateTimeImmutable $dateTime
+     * @param float|null $elevation
+     * @param array $extensions
+     * @return TrackPoint
+     */
+    public static function with(
+        ?float $latitude,
+        ?float $longitude,
+        \DateTimeImmutable $dateTime,
+        ?float $elevation = null,
+        array $extensions = []
+    ): TrackPoint {
+        Assertion::greaterOrEqualThan($latitude, -180);
+        Assertion::greaterOrEqualThan($longitude, -180);
+        Assertion::lessOrEqualThan($latitude, 180);
+        Assertion::lessOrEqualThan($longitude, 180);
+        Assertion::allIsInstanceOf($extensions, ExtensionInterface::class);
+
+        return new static($latitude, $longitude, $dateTime, $elevation, $extensions);
+    }
+
+    /**
+     * Get the elevation.
+     *
+     * @return float
+     */
+    public function elevation(): float
+    {
+        return $this->elevation;
+    }
+
+    /**
+     * Get the extensions.
+     *
+     * @return ExtensionInterface[]
+     */
+    public function extensions(): array
+    {
+        return array_values($this->extensions);
+    }
+
 
     /**
      * Check if an extension is present.
@@ -124,7 +132,7 @@ class TrackPoint
      * @param string $idExtension The ID of the extension.
      * @return boolean
      */
-    public function hasExtension($idExtension)
+    public function hasExtension(string $idExtension): bool
     {
         return array_key_exists($idExtension, $this->extensions);
     }
@@ -136,7 +144,7 @@ class TrackPoint
      * @return ExtensionInterface
      * @throws \OutOfBoundsException If the extension is not found.
      */
-    public function extension($idExtension)
+    public function extension($idExtension): ExtensionInterface
     {
         if ($this->hasExtension($idExtension) !== true) {
             throw new \OutOfBoundsException(sprintf('Extension "%s" not found.', $idExtension));
@@ -150,7 +158,7 @@ class TrackPoint
      *
      * @return float
      */
-    public function latitude() : float
+    public function latitude(): ?float
     {
         return $this->latitude;
     }
@@ -160,7 +168,7 @@ class TrackPoint
      *
      * @return float
      */
-    public function longitude() : float
+    public function longitude(): ?float
     {
         return $this->longitude;
     }
@@ -168,45 +176,11 @@ class TrackPoint
     /**
      * Get the date time of the point.
      *
-     * @return \DateTime
+     * @return \DateTimeImmutable
      */
-    public function dateTime() : \DateTime
+    public function dateTime(): \DateTimeImmutable
     {
         return $this->dateTime;
-    }
-
-    /**
-     * Set the distance from start to this point.
-     *
-     * @param float $distance The distance from start to this point.
-     */
-    public function setDistance($distance = null)
-    {
-        if ($distance !== null) {
-            $distance = (float)$distance;
-        }
-
-        $this->distance = $distance;
-    }
-
-    /**
-     * Check if the point has a distance set from start to this point.
-     *
-     * @return boolean
-     */
-    public function hasDistance() : bool
-    {
-        return $this->distance !== null;
-    }
-
-    /**
-     * Get the distance from start to this point.
-     *
-     * @return float
-     */
-    public function distance()
-    {
-        return $this->distance;
     }
 
     /**
@@ -215,7 +189,7 @@ class TrackPoint
      * @param TrackPoint $trackPoint The other point.
      * @return float The distance in meters.
      */
-    public function distanceFromPoint(TrackPoint $trackPoint)  : float
+    public function distanceFromPoint(TrackPoint $trackPoint): float
     {
         $earthRadius = 6371000;
 
@@ -243,22 +217,18 @@ class TrackPoint
      * @param TrackPoint $trackPoint The other point.
      * @return float
      */
-    public function speed(TrackPoint $trackPoint)  : float
+    public function speed(TrackPoint $trackPoint): float
     {
         $start = $this->dateTime();
         $end = $trackPoint->dateTime();
         $dateDiff = $start->diff($end);
-        $secondsDifference = $dateDiff->days * 86400 + $dateDiff->h * 3600 + $dateDiff->i * 60 + $dateDiff->s;
+        $secondsDifference = ($dateDiff->days * 86400) + ($dateDiff->h * 3600) + ($dateDiff->i * 60) + $dateDiff->s;
 
         if ($secondsDifference === 0) {
             return 0.0;
         }
 
-        if ($this->hasDistance() === true && $trackPoint->hasDistance()) {
-            $distance = abs($this->distance() - $trackPoint->distance());
-        } else {
-            $distance = $this->distanceFromPoint($trackPoint);
-        }
+        $distance = $this->distanceFromPoint($trackPoint);
 
         return ($distance / $secondsDifference) * 3.6;
     }

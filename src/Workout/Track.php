@@ -4,47 +4,48 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout;
 
+use Assert\Assertion;
 use SportTrackerConnector\Core\Date\DateInterval;
 
 /**
  * A track of a workout.
  */
-class Track
+final class Track
 {
     /**
      * The sport for the workout.
      *
      * @var string
      */
-    protected $sport = SportMapperInterface::OTHER;
+    private $sport = SportMapperInterface::OTHER;
 
     /**
      * The track points of this track.
      *
      * @var TrackPoint[]
      */
-    protected $trackPoints = array();
+    private $trackPoints = array();
 
     /**
      * The start date and time of the track.
      *
-     * @var \DateTime
+     * @var \DateTimeImmutable
      */
-    protected $startDateTime;
+    private $startDateTime;
 
     /**
      * The end date and time of the track.
      *
-     * @var \DateTime
+     * @var \DateTimeImmutable
      */
-    protected $endDateTime;
+    private $endDateTime;
 
     /**
      * Get the length of the track in meters.
      *
      * @var float
      */
-    protected $length = 0;
+    private $length = 0;
 
     /**
      * Constructor.
@@ -54,6 +55,8 @@ class Track
      */
     public function __construct(array $trackPoints = array(), string $sport = SportMapperInterface::OTHER)
     {
+        Assertion::allIsInstanceOf($trackPoints, TrackPoint::class);
+
         $this->trackPoints = $trackPoints;
         $this->sport = $sport;
     }
@@ -63,19 +66,9 @@ class Track
      *
      * @return string
      */
-    public function sport() : string
+    public function sport(): string
     {
         return $this->sport;
-    }
-
-    /**
-     * Add a track point.
-     *
-     * @param TrackPoint $trackPoint The track point to add.
-     */
-    public function addTrackPoint(TrackPoint $trackPoint)
-    {
-        $this->trackPoints[] = $trackPoint;
     }
 
     /**
@@ -94,7 +87,7 @@ class Track
      * @return TrackPoint
      * @throws \OutOfBoundsException If no track points are defined.
      */
-    public function lastTrackPoint() : TrackPoint
+    public function lastTrackPoint(): TrackPoint
     {
         $lastTrackPoint = end($this->trackPoints);
 
@@ -110,9 +103,9 @@ class Track
     /**
      * Get the start date and time of the track.
      *
-     * @return \DateTime
+     * @return \DateTimeImmutable
      */
-    public function startDateTime()
+    public function startDateTime(): \DateTimeImmutable
     {
         if ($this->startDateTime === null) {
             $this->recomputeStartDateTime();
@@ -124,9 +117,9 @@ class Track
     /**
      * Recompute the start date and time of the track.
      *
-     * @return \DateTime
+     * @return \DateTimeImmutable
      */
-    public function recomputeStartDateTime()
+    private function recomputeStartDateTime(): \DateTimeImmutable
     {
         $this->startDateTime = null;
         foreach ($this->trackPoints() as $trackPoint) {
@@ -141,9 +134,9 @@ class Track
     /**
      * Get the start date and time of the track.
      *
-     * @return \DateTime
+     * @return \DateTimeImmutable
      */
-    public function endDateTime()
+    public function endDateTime(): \DateTimeImmutable
     {
         if ($this->endDateTime === null) {
             $this->recomputeEndDateTime();
@@ -155,9 +148,9 @@ class Track
     /**
      * Recompute the start date and time of the track.
      *
-     * @return \DateTime
+     * @return \DateTimeImmutable
      */
-    public function recomputeEndDateTime()
+    private function recomputeEndDateTime(): \DateTimeImmutable
     {
         $this->endDateTime = null;
         foreach ($this->trackPoints() as $trackPoint) {
@@ -198,8 +191,9 @@ class Track
      * Set the length of the track in meters.
      *
      * @param float $length The length of the track in meters.
+     * @deprecated
      */
-    public function setLength($length)
+    public function setLength(float $length)
     {
         $this->length = $length;
     }
@@ -209,7 +203,7 @@ class Track
      *
      * @return float
      */
-    public function length()
+    public function length(): float
     {
         if ($this->length === 0) {
             $this->length = $this->recomputeLength();
@@ -224,7 +218,7 @@ class Track
      *
      * @return float
      */
-    public function recomputeLength()
+    private function recomputeLength(): float
     {
         $this->length = 0;
 

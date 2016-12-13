@@ -6,6 +6,7 @@ namespace SportTrackerConnector\Core\Tracker;
 
 use SportTrackerConnector\Core\Workout\SportMapperInterface;
 use SportTrackerConnector\Core\Workout\Workout;
+use Workout\WorkoutIdInterface;
 
 /**
  * Interface for trackers.
@@ -17,37 +18,37 @@ interface TrackerInterface
      *
      * @return string
      */
-    public static function ID() : string;
+    public static function ID(): string;
 
     /**
-     * Get a list of workouts.
+     * Fetch a list of workouts from the tracker.
      *
-     * @param \DateTime $startDate The start date for the workouts.
-     * @param \DateTime $endDate The end date for the workouts.
-     * @return TrackerListWorkoutsResult[]
+     * @param \DateTimeImmutable $startDate The start date for the workouts.
+     * @param \DateTimeImmutable $endDate The end date for the workouts.
+     * @return Workout[]
      */
-    public function workouts(\DateTime $startDate, \DateTime $endDate) : array;
+    public function workouts(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array;
 
     /**
-     * Download a workout.
+     * Fetch a workout from the tracker.
      *
-     * @param string $idWorkout The ID of the workout to download.
+     * @param WorkoutIdInterface $idWorkout The ID of the workout to download.
      * @return Workout
      */
-    public function workout($idWorkout) : Workout;
+    public function workout(WorkoutIdInterface $idWorkout): Workout;
 
     /**
-     * Upload a workout.
+     * Upload a workout to the tracker.
      *
      * @param Workout $workout The workout to upload.
      * @return boolean
      */
-    public function post(Workout $workout) : bool;
+    public function save(Workout $workout): bool;
 
     /**
      * Get the sport mapper.
      *
      * @return SportMapperInterface
      */
-    public function sportMapper() : SportMapperInterface;
+    public function sportMapper(): SportMapperInterface;
 }

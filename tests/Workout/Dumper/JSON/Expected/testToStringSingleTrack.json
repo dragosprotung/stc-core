@@ -4,20 +4,20 @@
       "points": [
         {
           "time": "2014-05-30T17:12:58+00:00",
-          "latitude": "53.551075",
-          "longitude": "9.993672",
+          "latitude": 53.551075,
+          "longitude": 9.993672,
           "elevation": 11,
-          "distance": null,
+          "distance": 0,
           "extensions": {
             "HR": 78
           }
         },
         {
           "time": "2014-05-30T17:12:59+00:00",
-          "latitude": "53.550085",
-          "longitude": "9.992682",
+          "latitude": 53.550085,
+          "longitude": 9.992682,
           "elevation": 10,
-          "distance": null,
+          "distance": 128.04548713833256,
           "extensions": {
             "HR": 88
           }

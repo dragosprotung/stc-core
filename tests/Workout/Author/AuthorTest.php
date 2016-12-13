@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Tests\Workout\Author;
 
+use Assert\AssertionFailedException;
 use SportTrackerConnector\Core\Workout\Author;
 
 /**
@@ -12,67 +13,34 @@ use SportTrackerConnector\Core\Workout\Author;
 class AuthorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Data provider for testSetGetNameValid();
+     * Data provider for testValidName();
      *
      * @return array
      */
-    public function dataProviderTestSetGetNameValid()
+    public function dataProviderTestValidName()
     {
         return array(
             array('100'),
-            array('John Doe'),
-            array(new TestSetGetNameInvalidToString())
+            array('John Doe')
         );
     }
 
     /**
      * Test setting the name of the author with valid values.
      *
-     * @dataProvider dataProviderTestSetGetNameValid
+     * @dataProvider dataProviderTestValidName
      * @param mixed $name The name to set.
      */
-    public function testSetGetNameValid($name)
+    public function testValidName($name)
     {
         $author = new Author($name);
         self::assertEquals($name, $author->name());
     }
 
-    /**
-     * Data provider for testSetGetNameValid();
-     *
-     * @return array
-     */
-    public function dataProviderTestSetGetNameInvalid()
+    public function testNameEmpty()
     {
-        return array(
-            array(null),
-            array(array()),
-            array(new \stdClass())
-        );
-    }
+        $this->expectException(AssertionFailedException::class);
 
-    /**
-     * Test setting the name of the author with invalid values.
-     *
-     * @dataProvider dataProviderTestSetGetNameInvalid
-     * @param mixed $name The name to set.
-     */
-    public function testSetGetNameInvalid($name)
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The name of the author must be a string.');
-
-        new Author($name);
-    }
-}
-
-/**
- * Class that implements __toString for testing setting the author name.
- */
-class TestSetGetNameInvalidToString
-{
-    public function __toString()
-    {
-        return 'john Doe';
+        new Author('');
     }
 }

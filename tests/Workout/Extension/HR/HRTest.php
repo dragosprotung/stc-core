@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Tests\Workout\Extension\HR;
 
+use Assert\AssertionFailedException;
 use SportTrackerConnector\Core\Workout\Extension\HR;
 
 /**
@@ -27,9 +28,8 @@ class HRTest extends \PHPUnit_Framework_TestCase
     public function dataProviderTestSetValueValid()
     {
         return array(
-            array(null),
-            array(123),
-            array(230)
+            array(40),
+            array(210)
         );
     }
 
@@ -41,40 +41,40 @@ class HRTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetValueValid($value)
     {
-        $hr = new HR($value);
+        $hr = HR::fromValue($value);
 
         self::assertSame($value, $hr->value());
     }
 
     /**
-     * Data provider for testSetValueInvalid();
+     * Data provider for testInvalidValues();
      *
      * @return array
      */
-    public function dataProviderTestSetValueInvalid()
+    public function dataProviderInvalidValues()
     {
         return array(
+            array(null),
             array(''),
             array(123.123),
             array('some string'),
             array(array('123')),
             array(new \stdClass()),
             array(-1),
-            array(231),
+            array(211),
         );
     }
 
     /**
      * Test set/get the value of an extension.
      *
-     * @dataProvider dataProviderTestSetValueInvalid
+     * @dataProvider dataProviderInvalidValues
      * @param mixed $value The value.
      */
-    public function testSetValueInvalid($value)
+    public function testInvalidValues($value)
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The value for the HR must be an integer and between 0 and 230.');
+        $this->expectException(AssertionFailedException::class);
 
-        new HR($value);
+        HR::fromValue($value);
     }
 }

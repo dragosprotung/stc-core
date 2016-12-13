@@ -16,46 +16,49 @@ use SportTrackerConnector\Core\Workout\Workout;
 /**
  * Load a workout from GPX format.
  */
-class GPX extends AbstractLoader
+class GPX implements LoaderInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function fromString($string) : Workout
+    public function load(string $filePath): Workout
     {
-        $simpleXML = new \SimpleXMLElement($string);
-        $workout = new Workout();
+        $simpleXML = new \SimpleXMLElement($filePath);
 
+        $author = null;
         if (isset($simpleXML->metadata->author->name)) {
-            $workout->setAuthor(new Author($simpleXML->metadata->author->name));
+            $author = new Author((string)$simpleXML->metadata->author->name);
         }
 
+        $tracks = [];
         foreach ($simpleXML->trk as $simpleXMLTrack) {
             // Sport.
             $sport = SportMapperInterface::class;
             if (isset($simpleXMLTrack->type)) {
-                $sport = SportGuesser::sportFromCode((string)$simpleXMLTrack->type);
+                $sport = SportGuesser::guess((string)$simpleXMLTrack->type);
             }
 
-            $track = new Track(array(), $sport);
-
+            $points = [];
             // Track points.
             foreach ($simpleXMLTrack->trkseg->trkpt as $point) {
                 $attributes = $point->attributes();
-                $dateTime = new \DateTime((string)$point->time);
-                $trackPoint = new TrackPoint((float)$attributes['lat'], (float)$attributes['lon'], $dateTime);
-                $trackPoint->setElevation((int)$point->ele);
-                if (isset($point->extensions)) {
-                    $trackPoint->setExtensions($this->parseExtensions($point->extensions));
-                }
 
-                $track->addTrackPoint($trackPoint);
+                $trackPoint = TrackPoint::with(
+                    (float)$attributes['lat'],
+                    (float)$attributes['lon'],
+                    new \DateTimeImmutable((string)$point->time),
+                    (float)$point->ele,
+                    $this->parseExtensions($point->extensions)
+                );
+
+                $points[] = $trackPoint;
             }
+            $track = new Track($points, $sport);
 
-            $workout->addTrack($track);
+            $tracks[] = $track;
         }
 
-        return $workout;
+        return new Workout($tracks, $author);
     }
 
     /**
@@ -64,12 +67,12 @@ class GPX extends AbstractLoader
      * @param \SimpleXMLElement $extensions The extensions to parse.
      * @return ExtensionInterface[]
      */
-    protected function parseExtensions(\SimpleXMLElement $extensions) : array
+    protected function parseExtensions(\SimpleXMLElement $extensions): array
     {
         $extensions = $extensions->asXML();
         $return = array();
         if (preg_match('/<gpxtpx:hr>(.*)<\/gpxtpx:hr>/', $extensions, $matches)) {
-            $return[] = new HR((int)$matches[1]);
+            $return[] = HR::fromValue($matches[1]);
         }
 
         return $return;

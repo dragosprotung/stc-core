@@ -7,7 +7,7 @@ namespace SportTrackerConnector\Core\Workout;
 /**
  * Simple class that tries to guess the sport from text representation.
  */
-class SportGuesser
+final class SportGuesser
 {
     /**
      * Get the sport code from the tracker sport code.
@@ -15,7 +15,7 @@ class SportGuesser
      * @param string $code The code from the tracker.
      * @return string
      */
-    public static function sportFromCode(string $code) : string
+    public static function guess(string $code) : string
     {
         switch (strtolower(trim($code))) {
             case SportMapperInterface::RUNNING:

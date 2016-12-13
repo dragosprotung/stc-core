@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout;
 
+use Assert\Assertion;
+
 /**
  * A workout.
  */
@@ -14,22 +16,24 @@ class Workout
      *
      * @var Author
      */
-    protected $author;
+    private $author;
 
     /**
      * The tracks of the workout.
      *
      * @var Track[]
      */
-    protected $tracks = array();
+    private $tracks = array();
 
     /**
-     * Set the author of a workout.
-     *
-     * @param Author $author The author.
+     * @param Track[] $tracks
+     * @param Author|null $author
      */
-    public function setAuthor(Author $author)
+    public function __construct(array $tracks, ?Author $author = null)
     {
+        Assertion::allIsInstanceOf($tracks, Track::class);
+
+        $this->tracks = $tracks;
         $this->author = $author;
     }
 
@@ -38,33 +42,9 @@ class Workout
      *
      * @return Author
      */
-    public function author()
+    public function author(): ?Author
     {
         return $this->author;
-    }
-
-    /**
-     * Add a track.
-     *
-     * @param Track $track The track to add.
-     */
-    public function addTrack(Track $track)
-    {
-        $this->tracks[] = $track;
-    }
-
-    /**
-     * Set the tracks.
-     *
-     * @param Track[] $tracks The tracks to set.
-     */
-    public function setTracks(array $tracks)
-    {
-        $this->tracks = array();
-
-        foreach ($tracks as $track) {
-            $this->addTrack($track);
-        }
     }
 
     /**
@@ -72,7 +52,7 @@ class Workout
      *
      * @return Track[]
      */
-    public function tracks()
+    public function tracks(): array
     {
         return $this->tracks;
     }

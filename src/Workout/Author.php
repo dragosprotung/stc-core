@@ -4,10 +4,12 @@ declare(strict_types = 1);
 
 namespace SportTrackerConnector\Core\Workout;
 
+use Assert\Assertion;
+
 /**
  * Author of a workout.
  */
-class Author
+final class Author
 {
     /**
      * The name of the author.
@@ -21,13 +23,10 @@ class Author
      *
      * @param string $name The name of the author.
      */
-    public function __construct($name)
+    public function __construct(string $name)
     {
-        if (is_string($name) || (is_object($name) && method_exists($name, '__toString'))) {
-            $name = (string)$name;
-        } else {
-            throw new \InvalidArgumentException('The name of the author must be a string.');
-        }
+        Assertion::string($name);
+        Assertion::notBlank($name);
 
         $this->name = $name;
     }
@@ -37,7 +36,7 @@ class Author
      *
      * @return string
      */
-    public function name() : string
+    public function name(): string
     {
         return $this->name;
     }
