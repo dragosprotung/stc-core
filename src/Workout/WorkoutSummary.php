@@ -2,9 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Workout;
-
-use SportTrackerConnector\Core\Workout\WorkoutIdInterface;
+namespace SportTrackerConnector\Core\Workout;
 
 final class WorkoutSummary
 {
