@@ -6,7 +6,7 @@ namespace SportTrackerConnector\Core\Tracker;
 
 use SportTrackerConnector\Core\Workout\SportMapperInterface;
 use SportTrackerConnector\Core\Workout\Workout;
-use Workout\WorkoutIdInterface;
+use SportTrackerConnector\Core\Workout\WorkoutIdInterface;
 
 /**
  * Interface for trackers.

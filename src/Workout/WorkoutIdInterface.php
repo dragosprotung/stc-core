@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Workout;
+namespace SportTrackerConnector\Core\Workout;
 
 interface WorkoutIdInterface
 {
