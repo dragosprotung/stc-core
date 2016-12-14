@@ -7,6 +7,7 @@ namespace SportTrackerConnector\Core\Tracker;
 use SportTrackerConnector\Core\Workout\SportMapperInterface;
 use SportTrackerConnector\Core\Workout\Workout;
 use SportTrackerConnector\Core\Workout\WorkoutIdInterface;
+use SportTrackerConnector\Core\Workout\WorkoutSummary;
 
 /**
  * Interface for trackers.
@@ -19,6 +20,15 @@ interface TrackerInterface
      * @return string
      */
     public static function ID(): string;
+
+    /**
+     * List workouts from the tracker.
+     *
+     * @param \DateTimeImmutable $startDate
+     * @param \DateTimeImmutable $endDate
+     * @return WorkoutSummary[]
+     */
+    public function list(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array;
 
     /**
      * Fetch a list of workouts from the tracker.
