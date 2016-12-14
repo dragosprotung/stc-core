@@ -10,4 +10,10 @@ interface WorkoutIdInterface
      * @return string
      */
     public function toString(): string;
+
+    /**
+     * @param WorkoutIdInterface $other
+     * @return bool
+     */
+    public function equals(WorkoutIdInterface $other): bool;
 }
